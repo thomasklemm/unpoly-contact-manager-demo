@@ -1,0 +1,13 @@
+<div id="flash" up-hungry>
+  <% flash.each do |type, message| %>
+    <% bg = case type.to_s
+      when "notice" then "bg-green-50 border-green-200 text-green-800"
+      when "alert"  then "bg-red-50 border-red-200 text-red-800"
+      when "error"  then "bg-red-50 border-red-200 text-red-800"
+      else               "bg-blue-50 border-blue-200 text-blue-800"
+    end %>
+    <div class="flex items-center gap-2 px-4 py-2 border-b <%= bg %>">
+      <span class="flex-1"><%= message %></span>
+    </div>
+  <% end %>
+</div>

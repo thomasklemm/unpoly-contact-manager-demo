@@ -1,29 +1,100 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Unpoly Demo" %></title>
+    <title><%= content_for(:title) || "Contacts" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Unpoly Demo">
-    <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-
-    <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <%# CSP not enforced — inline up-on-* callbacks work without up.safe_callback %>
+    <%#= csp_meta_tag %>
 
     <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%# Tailwind CSS via Play CDN %>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <%# Unpoly CSS %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/unpoly@3/dist/unpoly.css">
+
+    <%# Application JS via importmap %>
     <%= javascript_importmap_tags %>
+
+    <style>
+      /* Two-panel layout */
+      .app-shell {
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+      #contacts-list {
+        width: 320px;
+        min-width: 260px;
+        flex-shrink: 0;
+        overflow-y: auto;
+        border-right: 1px solid #e5e7eb;
+        background: #f9fafb;
+        display: flex;
+        flex-direction: column;
+      }
+      #contact-detail {
+        flex: 1;
+        overflow-y: auto;
+        background: #fff;
+      }
+
+      /* Contact row active state */
+      .contact-row.up-active,
+      .contact-row:has(.up-active) {
+        background-color: #eff6ff;
+      }
+      .contact-row.selected {
+        background-color: #dbeafe;
+        border-right: 3px solid #3b82f6;
+      }
+
+      /* Unpoly loading overlay */
+      .up-loading {
+        opacity: 0.6;
+        transition: opacity 0.2s;
+      }
+
+      /* Optimistic star states */
+      .star-icon.starred { color: #f59e0b; }
+      .star-icon.unstarred { color: #9ca3af; }
+
+      /* Overlay styling */
+      up-modal-viewport {
+        backdrop-filter: blur(2px);
+      }
+      up-modal-box {
+        border-radius: 0.75rem;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        max-width: 560px;
+        width: calc(100vw - 3rem);
+        padding: 0;
+        overflow: hidden;
+      }
+      up-drawer-box {
+        max-width: 480px;
+        box-shadow: -10px 0 30px rgba(0,0,0,0.15);
+      }
+    </style>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="bg-white text-gray-900 text-sm antialiased">
+    <%# Progress bar — shown during navigation %>
+    <up-progress-bar></up-progress-bar>
+
+    <%# Top navigation bar %>
+    <header class="h-12 bg-white border-b border-gray-200 flex items-center px-4 gap-4 flex-shrink-0 z-10">
+      <h1 class="font-semibold text-gray-900 text-base tracking-tight">Contacts</h1>
+    </header>
+
+    <%# Flash messages — up-hungry keeps them updated across fragment swaps %>
+    <%= render 'shared/flash' %>
+
+    <%# Two-panel shell %>
+    <div class="app-shell" style="height: calc(100vh - 3rem);">
+      <%= yield %>
+    </div>
   </body>
 </html>

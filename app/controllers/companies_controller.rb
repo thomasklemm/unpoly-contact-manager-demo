@@ -5,6 +5,11 @@ class CompaniesController < ApplicationController
     @companies = Company.order(:name)
   end
 
+  def show
+    @company = Company.find(params[:id])
+    @contacts = @company.contacts.active.order(:first_name, :last_name)
+  end
+
   def new
     @company = Company.new
   end

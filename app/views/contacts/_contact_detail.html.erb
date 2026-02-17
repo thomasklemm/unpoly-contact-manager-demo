@@ -10,7 +10,7 @@
     <div class="flex-1 min-w-0">
       <h2 class="font-display text-3xl text-gray-900 leading-tight"><%= contact.full_name %></h2>
       <% if contact.company %>
-        <p class="text-gray-500 mt-0.5 text-sm"><%= contact.company.name %></p>
+        <p class="mt-0.5 text-sm"><%= link_to contact.company.name, company_path(contact.company), "up-layer" => "new modal", class: "text-gray-500 hover:text-accent transition-colors" %></p>
       <% end %>
     </div>
 
@@ -24,9 +24,9 @@
         <%= contact.starred? ? "★" : "☆" %>
       <% end %>
 
-      <%# Edit — opens modal %>
+      <%# Edit — opens overlay (modal or drawer based on toggle) %>
       <%= link_to edit_contact_path(contact),
-            "up-layer" => "new modal",
+            "data-overlay-link" => "",
             "up-on-accepted" => "up.reload('#contact-detail')",
             class: "w-9 h-9 flex items-center justify-center rounded-lg hover:bg-black/5 text-gray-500 hover:text-gray-700 transition-colors",
             title: "Edit" do %>
@@ -117,7 +117,7 @@
   <div>
     <h3 class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-4">Activity</h3>
     <%# up-defer fetches the URL and replaces this element with #activities-panel from the response %>
-    <div id="activities-panel" up-defer="<%= contact_activities_path(contact) %>">
+    <div id="activities-panel" up-defer up-href="<%= contact_activities_path(contact) %>">
       <div class="flex items-center gap-2 text-sm text-gray-400">
         <div class="w-4 h-4 rounded-full border-2 border-gray-300 border-t-transparent animate-spin"></div>
         Loading activity...

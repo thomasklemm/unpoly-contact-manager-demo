@@ -6,13 +6,27 @@
   <div class="p-4 pb-3">
     <div class="flex items-center justify-between mb-4">
       <h1 class="font-display text-xl text-white tracking-tight">Contacts</h1>
-      <%= link_to new_contact_path,
-            "up-layer" => "new modal",
-            "up-on-accepted" => "up.reload('#contacts-list')",
-            class: "w-8 h-8 flex items-center justify-center rounded-lg bg-accent/20 text-accent hover:bg-accent/30 transition-colors",
-            title: "New Contact" do %>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
-      <% end %>
+      <div class="flex items-center gap-1.5">
+        <button type="button"
+                class="theme-toggle w-8 h-8 flex items-center justify-center rounded-lg"
+                title="Toggle dark mode"
+                onclick="document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');">
+          <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button data-overlay-toggle data-current="modal" onclick="toggleOverlayStyle()"
+          class="overlay-toggle-pill flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium tracking-wide uppercase transition-colors"
+          title="Switch overlay style">
+          <span class="overlay-toggle-label"></span>
+        </button>
+        <%= link_to new_contact_path,
+              "data-overlay-link" => "",
+              "up-on-accepted" => "up.reload('#contacts-list')",
+              class: "w-8 h-8 flex items-center justify-center rounded-lg bg-accent/20 text-accent hover:bg-accent/30 transition-colors",
+              title: "New Contact" do %>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
+        <% end %>
+      </div>
     </div>
 
     <%# Search form — never inside #contacts-list, so focus survives fragment swaps %>

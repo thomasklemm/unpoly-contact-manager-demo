@@ -27,3 +27,31 @@ up.compiler('#contacts-list', function(element) {
   let filterInput = document.getElementById('search-filter')
   if (filterInput) filterInput.value = element.dataset.filter || ''
 })
+
+// Overlay style toggle (modal vs drawer)
+function getOverlayStyle() {
+  return localStorage.getItem('overlayStyle') || 'modal'
+}
+
+up.macro('[data-overlay-link]', function(link) {
+  link.setAttribute('up-layer', 'new ' + getOverlayStyle())
+})
+
+window.toggleOverlayStyle = function() {
+  const current = getOverlayStyle()
+  const next = current === 'modal' ? 'drawer' : 'modal'
+  localStorage.setItem('overlayStyle', next)
+  // Re-compile all overlay links to pick up the new style
+  document.querySelectorAll('[data-overlay-link]').forEach(function(el) {
+    el.setAttribute('up-layer', 'new ' + next)
+  })
+  // Update toggle button appearance
+  document.querySelectorAll('[data-overlay-toggle]').forEach(function(el) {
+    el.setAttribute('data-current', next)
+  })
+}
+
+// Initialize toggle button to match stored preference on compile
+up.compiler('[data-overlay-toggle]', function(element) {
+  element.setAttribute('data-current', getOverlayStyle())
+})

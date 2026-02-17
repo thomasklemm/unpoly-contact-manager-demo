@@ -2,25 +2,30 @@
 <div id="activities-panel">
 
   <%# Inline form to add a new activity %>
-  <div class="mb-6">
+  <div class="mb-6 bg-surface-raised rounded-xl border border-gray-200/60 p-4">
     <%= form_with model: [ @contact, @activity ],
-          class: "space-y-2",
-          html: { "up-target" => "#activities-panel" } do |f| %>
+          "up-target": "#activities-panel",
+          class: "space-y-3" do |f| %>
 
-      <div class="flex gap-2">
+      <div class="flex gap-2 items-start">
         <%= f.select :kind, Activity::KINDS.map { |k| [ k.capitalize, k ] },
               {},
               class: "form-input px-3 py-2 text-sm border border-gray-200 rounded-lg bg-surface-raised" %>
-        <%= f.text_field :body, placeholder: "Add a note, log a call...",
-              autocomplete: "off",
-              class: "form-input flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg bg-surface-raised" %>
-        <%= f.submit "Add",
-              class: "px-4 py-2 text-sm font-medium text-white bg-accent rounded-lg hover:bg-accent-dark cursor-pointer transition-colors shadow-sm" %>
+        <div class="flex-1">
+          <%= f.text_area :body, placeholder: "Add a note, log a call...",
+                rows: 2,
+                autocomplete: "off",
+                class: "form-input w-full px-3 py-2 text-sm border border-gray-200 rounded-lg bg-surface-raised resize-none" %>
+          <% if @activity.errors[:body].any? %>
+            <p class="text-xs text-red-600 mt-1"><%= @activity.errors[:body].first %></p>
+          <% end %>
+        </div>
       </div>
 
-      <% if @activity.errors[:body].any? %>
-        <p class="text-xs text-red-600"><%= @activity.errors[:body].first %></p>
-      <% end %>
+      <div class="flex justify-end">
+        <%= f.submit "Add activity",
+              class: "px-4 py-2 text-sm font-medium text-white bg-accent rounded-lg hover:bg-accent-dark cursor-pointer transition-colors shadow-sm" %>
+      </div>
     <% end %>
   </div>
 

@@ -1,0 +1,26 @@
+<div class="p-6" up-main>
+  <h2 class="font-display text-3xl text-gray-900 leading-tight"><%= @company.name %></h2>
+
+  <% if @company.website.present? %>
+    <p class="mt-1">
+      <a href="<%= @company.website %>" target="_blank" rel="noopener"
+         class="text-sm text-accent hover:text-accent-dark transition-colors"><%= @company.website %></a>
+    </p>
+  <% end %>
+
+  <p class="text-sm text-gray-500 mt-2"><%= pluralize(@contacts.count, 'contact') %></p>
+
+  <% if @contacts.any? %>
+    <div class="mt-6 space-y-2">
+      <% @contacts.each do |contact| %>
+        <%= link_to contact_path(contact),
+              "up-target" => "#contact-detail",
+              "up-layer" => "root",
+              class: "block p-3 rounded-lg bg-surface-raised border border-gray-200/60 hover:border-accent/30 transition-colors" do %>
+          <p class="text-sm font-medium text-gray-900"><%= contact.full_name %></p>
+          <p class="text-xs text-gray-500 mt-0.5"><%= contact.email %></p>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -1,14 +1,36 @@
 <%# Two-panel contact manager layout %>
 
-<%# LEFT PANEL: contact list with search + filter %>
-<div id="contacts-list">
-  <%= render 'contacts_list', contacts: @contacts %>
+<%# LEFT PANEL: sidebar wrapper (search lives here, outside the replaced fragment) %>
+<div id="contacts-sidebar">
+  <%# Search form — never inside #contacts-list, so focus survives fragment swaps %>
+  <div class="p-3 bg-gray-50 border-b border-gray-200">
+    <%= form_with url: contacts_path, method: :get,
+          id: "contacts-search-form",
+          "up-target" => "#contacts-list",
+          class: "flex gap-2" do |f| %>
+      <%# Hidden filter field — kept in sync by the up.compiler in application.js %>
+      <input type="hidden" id="search-filter" name="filter" value="<%= params[:filter] %>">
+      <%= f.search_field :q,
+            value: params[:q],
+            placeholder: "Search contacts…",
+            autocomplete: "off",
+            "up-autosubmit" => "",
+            "up-delay" => "300",
+            class: "flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" %>
+    <% end %>
+  </div>
+
+  <%# Contact list fragment — replaced on search/filter changes %>
+  <%# data-filter is read by up.compiler to keep the search form's hidden field in sync %>
+  <div id="contacts-list" class="flex-1 overflow-y-auto" data-filter="<%= params[:filter] %>">
+    <%= render 'contacts_list', contacts: @contacts %>
+  </div>
 </div>
 
-<%# RIGHT PANEL: contact detail (empty state initially) %>
+<%# RIGHT PANEL: contact detail %>
 <div id="contact-detail" class="flex items-center justify-center text-gray-400 text-base">
   <div class="text-center">
-    <div class="text-4xl mb-3">👤</div>
+    <div class="text-8xl mb-4 text-gray-200">👤</div>
     <p class="font-medium text-gray-500">Select a contact</p>
     <p class="text-sm mt-1">Click any contact to view details</p>
   </div>

@@ -20,3 +20,10 @@ up.preview('archive-contact', function(preview) {
   let row = preview.origin.closest('.contact-row')
   if (row) preview.setStyleTemporarily(row, { opacity: '0.3', pointerEvents: 'none' })
 })
+
+// Keep the search form's hidden filter field in sync with the current filter.
+// Runs every time #contacts-list is swapped (search or filter tab click).
+up.compiler('#contacts-list', function(element) {
+  let filterInput = document.getElementById('search-filter')
+  if (filterInput) filterInput.value = element.dataset.filter || ''
+})

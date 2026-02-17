@@ -13,10 +13,9 @@ class CompaniesController < ApplicationController
     @company = Company.new(company_params)
     if @company.save
       if up.layer.overlay?
-        # Accept the modal with the new company's id so the parent form can
-        # inject it into the company select via up-on-accepted.
-        up.layer.accept(@company.id)
-        up.render_nothing
+        # Accept with {id:, name:} so up-on-accepted can build the <option> element.
+        up.layer.accept({ id: @company.id, name: @company.name })
+        head :no_content
       else
         flash[:notice] = "#{@company.name} was created."
         redirect_to companies_path

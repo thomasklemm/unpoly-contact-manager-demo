@@ -1,0 +1,11 @@
+alice_customer:
+  contact: alice
+  tag: customer
+
+alice_vip:
+  contact: alice
+  tag: vip
+
+bob_prospect:
+  contact: bob
+  tag: prospect

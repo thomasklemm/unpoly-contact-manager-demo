@@ -1,0 +1,11 @@
+customer:
+  name: Customer
+  color: "#10b981"
+
+prospect:
+  name: Prospect
+  color: "#3b82f6"
+
+vip:
+  name: VIP
+  color: "#8b5cf6"

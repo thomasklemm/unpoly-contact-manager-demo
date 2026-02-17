@@ -1,0 +1,32 @@
+alice:
+  first_name: Alice
+  last_name: Johnson
+  email: alice.johnson@acme.example.com
+  phone: "+1-555-0101"
+  company: acme
+  starred: true
+  notes: "Met at the 2024 SaaS Summit."
+
+bob:
+  first_name: Bob
+  last_name: Williams
+  email: bob.williams@globex.example.com
+  phone: "+1-555-0102"
+  company: globex
+  starred: false
+
+carol:
+  first_name: Carol
+  last_name: Davis
+  email: carol.davis@test.example.com
+  phone: "+1-555-0103"
+  company: acme
+  starred: true
+
+archived_contact:
+  first_name: Aaron
+  last_name: Turner
+  email: aaron.turner@globex.example.com
+  phone: "+1-555-0127"
+  company: globex
+  archived_at: <%= 3.weeks.ago.to_fs(:db) %>

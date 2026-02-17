@@ -1,4 +1,7 @@
 <div class="p-6" up-main>
-  <h2 class="text-lg font-semibold text-gray-900 mb-4">Edit Contact</h2>
+  <div class="mb-5">
+    <h2 class="font-display text-2xl text-gray-900">Edit Contact</h2>
+    <p class="text-xs text-gray-400 mt-0.5"><%= @contact.full_name %></p>
+  </div>
   <%= render 'form', contact: @contact %>
 </div>

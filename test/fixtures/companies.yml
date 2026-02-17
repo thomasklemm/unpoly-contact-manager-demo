@@ -1,0 +1,7 @@
+acme:
+  name: Acme Corp
+  website: https://acme.example.com
+
+globex:
+  name: Globex Industries
+  website: https://globex.example.com

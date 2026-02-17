@@ -1,0 +1,11 @@
+alice_note:
+  contact: alice
+  kind: note
+  body: "Discussed pricing options for the enterprise tier."
+  created_at: <%= 2.days.ago.to_fs(:db) %>
+
+alice_call:
+  contact: alice
+  kind: call
+  body: "30-minute intro call."
+  created_at: <%= 1.day.ago.to_fs(:db) %>

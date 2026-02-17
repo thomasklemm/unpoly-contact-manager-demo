@@ -9,8 +9,45 @@
 
     <link rel="icon" href="/icon.png" type="image/png">
 
+    <%# Google Fonts — DM Sans for body, Instrument Serif for display %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
     <%# Tailwind CSS via Play CDN %>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+              display: ['"Instrument Serif"', 'Georgia', 'serif'],
+            },
+            colors: {
+              sidebar: {
+                DEFAULT: '#1a1d23',
+                light: '#22252d',
+                lighter: '#2a2e37',
+                border: '#32363f',
+              },
+              accent: {
+                DEFAULT: '#d4976a',
+                light: '#e4b08a',
+                dark: '#b47a50',
+                faint: 'rgba(212, 151, 106, 0.1)',
+                subtle: 'rgba(212, 151, 106, 0.15)',
+              },
+              surface: {
+                DEFAULT: '#faf9f7',
+                raised: '#ffffff',
+                muted: '#f2f0ec',
+              },
+            },
+          },
+        },
+      }
+    </script>
 
     <%# Unpoly CSS (no /dist/ — correct path for the npm package) %>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/unpoly@3.12.1/unpoly.min.css">
@@ -22,22 +59,25 @@
     <%= javascript_importmap_tags %>
 
     <style>
-      /* Two-panel layout */
+      /* ---- Layout ---- */
       .app-shell {
         display: flex;
         height: 100vh;
         overflow: hidden;
       }
       #contacts-sidebar {
-        width: 320px;
-        min-width: 260px;
+        width: 340px;
+        min-width: 280px;
         flex-shrink: 0;
         overflow-y: auto;
-        border-right: 1px solid #e5e7eb;
-        background: #f9fafb;
+        background: #1a1d23;
         display: flex;
         flex-direction: column;
       }
+      #contacts-sidebar::-webkit-scrollbar { width: 4px; }
+      #contacts-sidebar::-webkit-scrollbar-track { background: transparent; }
+      #contacts-sidebar::-webkit-scrollbar-thumb { background: #32363f; border-radius: 2px; }
+
       #contacts-list {
         display: flex;
         flex-direction: column;
@@ -45,62 +85,165 @@
       #contact-detail {
         flex: 1;
         overflow-y: auto;
-        background: #fff;
+        background: #faf9f7;
       }
+      #contact-detail::-webkit-scrollbar { width: 6px; }
+      #contact-detail::-webkit-scrollbar-track { background: transparent; }
+      #contact-detail::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
 
-      /* Contact row active state */
+      /* ---- Contact rows ---- */
+      .contact-row {
+        border-left: 3px solid transparent;
+        transition: all 0.15s ease;
+      }
+      .contact-row:hover {
+        background: rgba(255,255,255,0.04);
+        border-left-color: rgba(212, 151, 106, 0.4);
+      }
       .contact-row.up-active,
       .contact-row:has(.up-active) {
-        background-color: #eff6ff;
+        background: rgba(212, 151, 106, 0.08);
+        border-left-color: #d4976a;
       }
       .contact-row.selected {
-        background-color: #dbeafe;
-        border-right: 3px solid #3b82f6;
+        background: rgba(212, 151, 106, 0.1);
+        border-left-color: #d4976a;
       }
 
-      /* Unpoly loading overlay */
+      /* ---- Loading state ---- */
       .up-loading {
-        opacity: 0.6;
-        transition: opacity 0.2s;
+        opacity: 0.5;
+        transition: opacity 0.15s ease;
       }
 
-      /* Optimistic star states */
-      .star-icon.starred { color: #f59e0b; }
+      /* ---- Star states ---- */
+      .star-icon.starred { color: #d4976a; }
       .star-icon.unstarred { color: #9ca3af; }
 
-      /* Overlay styling */
+      /* ---- Unpoly progress bar ---- */
+      up-progress-bar {
+        background: #d4976a !important;
+      }
+
+      /* ---- Overlay styling ---- */
       up-modal-viewport {
-        backdrop-filter: blur(2px);
+        backdrop-filter: blur(8px);
+        background: rgba(26, 29, 35, 0.6) !important;
       }
       up-modal-box {
-        border-radius: 0.75rem;
-        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-        max-width: 560px;
+        border-radius: 1rem;
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.05), 0 25px 60px -12px rgba(0,0,0,0.35);
+        max-width: 540px;
         width: calc(100vw - 3rem);
         padding: 0;
         overflow: hidden;
+        background: #fff;
       }
       up-drawer-box {
         max-width: 480px;
-        box-shadow: -10px 0 30px rgba(0,0,0,0.15);
+        box-shadow: -10px 0 40px rgba(0,0,0,0.2);
+      }
+
+      /* ---- Flash toast animation ---- */
+      @keyframes flash-in {
+        from { transform: translateY(-100%); opacity: 0; }
+        to   { transform: translateY(0); opacity: 1; }
+      }
+      @keyframes flash-out {
+        from { transform: translateY(0); opacity: 1; }
+        to   { transform: translateY(-100%); opacity: 0; }
+      }
+      .flash-toast {
+        animation: flash-in 0.3s ease-out;
+      }
+      .flash-toast.removing {
+        animation: flash-out 0.3s ease-in forwards;
+      }
+
+      /* ---- Activity timeline line ---- */
+      .activity-item {
+        position: relative;
+        padding-left: 2rem;
+      }
+      .activity-item::before {
+        content: '';
+        position: absolute;
+        left: 0.6875rem;
+        top: 1.75rem;
+        bottom: -0.75rem;
+        width: 1px;
+        background: #e5e2dd;
+      }
+      .activity-item:last-child::before {
+        display: none;
+      }
+      .activity-dot {
+        position: absolute;
+        left: 0.375rem;
+        top: 0.25rem;
+        width: 0.625rem;
+        height: 0.625rem;
+        border-radius: 50%;
+        background: #d4976a;
+        border: 2px solid #faf9f7;
+      }
+
+      /* ---- Sidebar search input ---- */
+      .sidebar-search {
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: #e5e7eb;
+        transition: all 0.2s ease;
+      }
+      .sidebar-search::placeholder {
+        color: #6b7280;
+      }
+      .sidebar-search:focus {
+        background: rgba(255,255,255,0.1);
+        border-color: rgba(212, 151, 106, 0.4);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(212, 151, 106, 0.15);
+      }
+
+      /* ---- Filter pill styling ---- */
+      .filter-pill {
+        transition: all 0.15s ease;
+      }
+      .filter-pill.active {
+        background: #d4976a;
+        color: #fff;
+      }
+      .filter-pill:not(.active) {
+        color: #9ca3af;
+      }
+      .filter-pill:not(.active):hover {
+        color: #d1d5db;
+        background: rgba(255,255,255,0.06);
+      }
+
+      /* ---- Form focus ring ---- */
+      .form-input:focus {
+        outline: none;
+        border-color: #d4976a;
+        box-shadow: 0 0 0 2px rgba(212, 151, 106, 0.2);
+      }
+
+      /* ---- Tag badges in detail view ---- */
+      .tag-badge {
+        backdrop-filter: blur(4px);
       }
     </style>
   </head>
 
-  <body class="bg-white text-gray-900 text-sm antialiased">
+  <body class="bg-surface font-sans text-gray-800 text-sm antialiased">
     <%# Progress bar — shown during navigation %>
     <up-progress-bar></up-progress-bar>
-
-    <%# Top navigation bar %>
-    <header class="h-12 bg-white border-b border-gray-200 flex items-center px-4 gap-4 flex-shrink-0 z-10">
-      <h1 class="font-semibold text-gray-900 text-base tracking-tight">Contacts</h1>
-    </header>
 
     <%# Flash messages — up-hungry keeps them updated across fragment swaps %>
     <%= render 'shared/flash' %>
 
-    <%# Two-panel shell %>
-    <div class="app-shell" style="height: calc(100vh - 3rem);">
+    <%# Two-panel shell — full height, no top nav bar for maximum space %>
+    <div class="app-shell">
       <%= yield %>
     </div>
   </body>

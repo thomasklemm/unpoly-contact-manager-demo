@@ -17,11 +17,11 @@
     <div class="flex items-center gap-1.5 flex-shrink-0">
       <%# Star toggle — optimistic preview %>
       <%= button_to star_contact_path(contact), method: :patch,
-            "up-target" => "#contact-detail",
+            "up-target" => "#contact-detail, .contact-row-#{contact.id}",
             "up-preview" => "toggle-star",
             class: "star-icon #{contact.starred? ? 'starred' : 'unstarred'} w-9 h-9 flex items-center justify-center rounded-lg hover:bg-black/5 text-lg border-0 bg-transparent cursor-pointer transition-colors",
             title: contact.starred? ? "Unstar" : "Star" do %>
-        <%= contact.starred? ? "&#9733;" : "&#9734;" %>
+        <%= contact.starred? ? "★" : "☆" %>
       <% end %>
 
       <%# Edit — opens modal %>
@@ -47,7 +47,7 @@
       <%= button_to contact_path(contact), method: :delete,
             "up-method" => "delete",
             "up-confirm" => "Delete #{contact.full_name}? This cannot be undone.",
-            "up-target" => "#contacts-list",
+            "up-target" => "#contacts-list, #contact-detail",
             "up-layer" => "root",
             class: "w-9 h-9 flex items-center justify-center rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 border-0 bg-transparent cursor-pointer transition-colors",
             title: "Delete" do %>

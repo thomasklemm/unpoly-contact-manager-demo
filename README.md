@@ -189,10 +189,21 @@ app/
 ## Tests
 
 ```bash
-bin/rails test
-```
+# All tests (unit + integration + system)
+bin/rails test:all
 
-47 unit + integration tests covering models, controllers, and filter/search logic.
+# System tests only (headless Chrome)
+bin/rails test:system
+
+# Unit + integration tests only
+bin/rails test
+
+# System tests in a visible browser window
+HEADED=1 bin/rails test:system
+
+# System tests with 300 ms server delay (shows Unpoly progress bar + transitions)
+DEMO_MODE=1 bin/rails test:system
+```
 
 ---
 

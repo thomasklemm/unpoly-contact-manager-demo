@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html>
+  <script>
+    // Apply saved theme before paint to prevent flash
+    if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+  </script>
   <head>
     <title><%= content_for(:title) || "Contacts" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -231,6 +235,41 @@
       /* ---- Tag badges in detail view ---- */
       .tag-badge {
         backdrop-filter: blur(4px);
+      }
+
+      /* ---- Dark mode ---- */
+      html.dark #contact-detail { background: #1e2128; color: #e5e7eb; }
+      html.dark .bg-surface-raised, html.dark .bg-white { background: #252830 !important; }
+      html.dark .form-input { background: #2a2f38; border-color: #3a4050; color: #e5e7eb; }
+      html.dark up-modal-box { background: #1e2128; }
+      html.dark up-drawer-box { background: #1e2128; }
+      html.dark .text-gray-900 { color: #f3f4f6 !important; }
+      html.dark .text-gray-600, html.dark .text-gray-700 { color: #9ca3af !important; }
+      html.dark .text-gray-400 { color: #6b7280 !important; }
+      html.dark .text-gray-500 { color: #8b95a5 !important; }
+      html.dark .border-gray-200\/60, html.dark .border-gray-200 { border-color: #3a4050 !important; }
+      html.dark .bg-surface-muted { background: #2a2f38 !important; }
+      html.dark .bg-surface { background: #1e2128 !important; }
+      html.dark .bg-amber-50 { background: #342a1a !important; }
+      html.dark .border-amber-200\/60 { border-color: #5a4520 !important; }
+      html.dark .text-amber-700 { color: #d4976a !important; }
+      html.dark .hover\:bg-black\/5:hover { background: rgba(255,255,255,0.06) !important; }
+      html.dark .hover\:bg-red-50:hover { background: rgba(220,38,38,0.1) !important; }
+      html.dark #contact-detail::-webkit-scrollbar-thumb { background: #3a4050; }
+      html.dark .activity-item::before { background: #3a4050; }
+      html.dark .activity-dot { border-color: #1e2128; }
+
+      /* Dark mode theme toggle button */
+      .theme-toggle {
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: #9ca3af;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+      .theme-toggle:hover {
+        background: rgba(255,255,255,0.1);
+        color: #e5e7eb;
       }
     </style>
   </head>

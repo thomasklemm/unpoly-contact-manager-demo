@@ -1,0 +1,12 @@
+<div class="flex gap-3 items-start">
+  <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm flex-shrink-0">
+    <%= activity.kind_icon %>
+  </div>
+  <div class="flex-1 min-w-0">
+    <div class="flex items-baseline gap-2">
+      <span class="text-xs font-medium text-gray-600 capitalize"><%= activity.kind %></span>
+      <span class="text-xs text-gray-400"><%= time_ago_in_words(activity.created_at) %> ago</span>
+    </div>
+    <p class="text-sm text-gray-700 mt-0.5"><%= activity.body %></p>
+  </div>
+</div>

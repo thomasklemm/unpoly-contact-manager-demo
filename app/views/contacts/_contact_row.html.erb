@@ -1,0 +1,31 @@
+<%= link_to contact_path(contact),
+      "up-target" => "#contact-detail",
+      "up-alias" => "/contacts/*",
+      "up-preload" => "",
+      "up-instant" => "",
+      class: "contact-row flex items-center gap-3 px-3 py-2.5 border-b border-gray-100 hover:bg-blue-50 cursor-pointer transition-colors" do %>
+  <%# Avatar %>
+  <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+    <%= contact.first_name[0].upcase %><%= contact.last_name[0].upcase %>
+  </div>
+
+  <%# Name + company %>
+  <div class="flex-1 min-w-0">
+    <div class="flex items-center gap-1">
+      <span class="font-medium text-gray-900 truncate"><%= contact.full_name %></span>
+      <% if contact.starred? %>
+        <span class="text-amber-400 text-xs">★</span>
+      <% end %>
+    </div>
+    <% if contact.company %>
+      <div class="text-xs text-gray-500 truncate"><%= contact.company.name %></div>
+    <% end %>
+  </div>
+
+  <%# Tags (first 2 only) %>
+  <div class="flex gap-1 flex-shrink-0">
+    <% contact.tags.first(2).each do |tag| %>
+      <span class="inline-block w-2 h-2 rounded-full" style="background-color: <%= tag.color %>;" title="<%= tag.name %>"></span>
+    <% end %>
+  </div>
+<% end %>

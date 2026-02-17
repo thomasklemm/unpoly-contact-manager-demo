@@ -1,0 +1,15 @@
+<%# Two-panel contact manager layout %>
+
+<%# LEFT PANEL: contact list with search + filter %>
+<div id="contacts-list">
+  <%= render 'contacts_list', contacts: @contacts %>
+</div>
+
+<%# RIGHT PANEL: contact detail (empty state initially) %>
+<div id="contact-detail" class="flex items-center justify-center text-gray-400 text-base">
+  <div class="text-center">
+    <div class="text-4xl mb-3">👤</div>
+    <p class="font-medium text-gray-500">Select a contact</p>
+    <p class="text-sm mt-1">Click any contact to view details</p>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<%# Dependent fields shown when a company is selected %>
+<% if contact.company_id.present? %>
+  <% selected_company = Company.find_by(id: contact.company_id) %>
+  <% if selected_company&.website.present? %>
+    <p class="mt-2 text-xs text-gray-500">
+      🌐 <a href="<%= selected_company.website %>" target="_blank" rel="noopener"
+            class="text-blue-600 hover:underline"><%= selected_company.website %></a>
+    </p>
+  <% end %>
+<% end %>

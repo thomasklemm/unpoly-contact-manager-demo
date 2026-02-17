@@ -1,0 +1,14 @@
+<div class="p-6 max-w-xl mx-auto">
+  <h2 class="text-xl font-bold text-gray-900 mb-4">Companies</h2>
+  <% @companies.each do |company| %>
+    <div class="flex items-center justify-between py-3 border-b border-gray-100">
+      <div>
+        <p class="font-medium text-gray-900"><%= company.name %></p>
+        <% if company.website.present? %>
+          <p class="text-sm text-gray-500"><%= company.website %></p>
+        <% end %>
+      </div>
+      <span class="text-xs text-gray-400"><%= company.contacts.count %> contacts</span>
+    </div>
+  <% end %>
+</div>

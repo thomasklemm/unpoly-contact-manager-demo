@@ -18,15 +18,19 @@ class ContactsController < ApplicationController
   def create
     @contact = Contact.new(contact_params)
 
-    if up.validate?
-      @contact.valid?
-      render "new", status: :unprocessable_entity
+    # up.validate? — per-field validation (X-Up-Validate header)
+    # up? && up.target? — up-watch reactive company select (only when Unpoly sent X-Up-Target)
+    # Note: up.target? returns true for ALL non-Unpoly requests, so guard with up? first
+    if up.validate? || (up? && up.target?("#company-fields"))
+      @contact.valid? if up.validate?
+      @companies = Company.order(:name)
+      @tags = Tag.order(:name)
+      render :new, status: :unprocessable_entity
       return
     end
 
     if @contact.save
       flash[:notice] = "#{@contact.full_name} was added."
-      up.layer.accept(contact_path(@contact)) if up.layer.overlay?
       redirect_to contact_path(@contact)
     else
       @companies = Company.order(:name)
@@ -41,16 +45,18 @@ class ContactsController < ApplicationController
   end
 
   def update
-    if up.validate?
+    # Same guard as create: only intercept when it's an actual Unpoly request
+    if up.validate? || (up? && up.target?("#company-fields"))
       @contact.assign_attributes(contact_params)
-      @contact.valid?
-      render "edit", status: :unprocessable_entity
+      @contact.valid? if up.validate?
+      @companies = Company.order(:name)
+      @tags = Tag.order(:name)
+      render :edit, status: :unprocessable_entity
       return
     end
 
     if @contact.update(contact_params)
       flash[:notice] = "#{@contact.full_name} was updated."
-      up.layer.accept(contact_path(@contact)) if up.layer.overlay?
       redirect_to contact_path(@contact)
     else
       @companies = Company.order(:name)

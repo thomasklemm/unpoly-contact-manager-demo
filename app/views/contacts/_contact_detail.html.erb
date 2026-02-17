@@ -99,7 +99,8 @@
   <%# Activities — lazy loaded via up-defer %>
   <div>
     <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Activity</h3>
-    <div up-defer="<%= contact_activities_path(contact) %>" up-hungry>
+    <%# up-defer fetches the URL and replaces this element with #activities-panel from the response %>
+    <div id="activities-panel" up-defer="<%= contact_activities_path(contact) %>">
       <div class="text-sm text-gray-400 animate-pulse">Loading activity…</div>
     </div>
   </div>

@@ -33,3 +33,7 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+# Agent skills
+/.agents/
+/.pi/
+

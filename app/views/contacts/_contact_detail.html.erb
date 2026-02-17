@@ -21,7 +21,6 @@
       <%# Edit — opens modal %>
       <%= link_to "Edit", edit_contact_path(contact),
             "up-layer" => "new modal",
-            "up-accept-location" => "/contacts/#{contact.id}",
             "up-on-accepted" => "up.reload('#contact-detail')",
             class: "px-3 py-1.5 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50" %>
 

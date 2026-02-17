@@ -14,34 +14,26 @@
           "up-target" => "#contacts-list" %>
   </div>
 
-  <%# Live search form — debounced autosubmit %>
+  <%# Live search — up-keep preserves the form (and focus) across #contacts-list swaps %>
   <%= form_with url: contacts_path, method: :get,
+        id: "contacts-search-form",
         "up-target" => "#contacts-list",
-        "up-autosubmit" => "",
-        "up-delay" => "300",
+        "up-keep" => "",
         class: "flex gap-2" do |f| %>
     <%= hidden_field_tag :filter, params[:filter] if params[:filter].present? %>
     <%= f.search_field :q,
           value: params[:q],
           placeholder: "Search contacts…",
           autocomplete: "off",
+          "up-autosubmit" => "",
+          "up-delay" => "300",
           class: "flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" %>
-  <% end %>
-
-  <%# New contact button opens modal %>
-  <%= link_to contacts_path,
-        "up-target" => "#contacts-list",
-        "up-layer" => "new modal",
-        "up-accept-location" => "/contacts/*",
-        "up-on-accepted" => "up.reload('#contacts-list')",
-        class: "hidden" do %>
   <% end %>
 
   <div class="flex justify-between items-center">
     <span class="text-xs text-gray-400"><%= contacts.size %> contact<%= contacts.size == 1 ? "" : "s" %></span>
     <%= link_to "+ New Contact", new_contact_path,
           "up-layer" => "new modal",
-          "up-accept-location" => "/contacts/*",
           "up-on-accepted" => "up.reload('#contacts-list')",
           class: "text-xs font-medium text-blue-600 hover:text-blue-800" %>
   </div>

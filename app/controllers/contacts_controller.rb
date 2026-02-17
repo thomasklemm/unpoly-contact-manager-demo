@@ -31,7 +31,12 @@ class ContactsController < ApplicationController
 
     if @contact.save
       flash[:notice] = "#{@contact.full_name} was added."
-      redirect_to contact_path(@contact)
+      if up.layer.overlay?
+        up.layer.accept(contact_path(@contact))
+        head :no_content
+      else
+        redirect_to contact_path(@contact)
+      end
     else
       @companies = Company.order(:name)
       @tags = Tag.order(:name)
@@ -57,7 +62,12 @@ class ContactsController < ApplicationController
 
     if @contact.update(contact_params)
       flash[:notice] = "#{@contact.full_name} was updated."
-      redirect_to contact_path(@contact)
+      if up.layer.overlay?
+        up.layer.accept(contact_path(@contact))
+        head :no_content
+      else
+        redirect_to contact_path(@contact)
+      end
     else
       @companies = Company.order(:name)
       @tags = Tag.order(:name)

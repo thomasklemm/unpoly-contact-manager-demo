@@ -12,10 +12,13 @@
     <%# Tailwind CSS via Play CDN %>
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <%# Unpoly CSS %>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/unpoly@3/dist/unpoly.css">
+    <%# Unpoly CSS (no /dist/ — correct path for the npm package) %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/unpoly@3.12.1/unpoly.min.css">
 
-    <%# Application JS via importmap %>
+    <%# Unpoly JS — loaded as blocking IIFE before importmap modules so window.up is ready %>
+    <script src="https://cdn.jsdelivr.net/npm/unpoly@3.12.1/unpoly.min.js"></script>
+
+    <%# Application JS via importmap (configures Unpoly, defines previews) %>
     <%= javascript_importmap_tags %>
 
     <style>

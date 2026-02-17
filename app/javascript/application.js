@@ -1,4 +1,5 @@
-import "unpoly"
+// Unpoly is loaded as a global script (IIFE) before this module runs.
+// Configure Unpoly global behavior:
 
 // Follow all links and forms by default
 up.link.config.followSelectors.push('a[href]')

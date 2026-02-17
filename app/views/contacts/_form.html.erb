@@ -80,8 +80,7 @@
       <div class="flex flex-wrap gap-2">
         <% @tags.each do |tag| %>
           <label class="flex items-center gap-1.5 cursor-pointer">
-            <%= f.check_box :tag_ids, { multiple: true, checked: contact.tag_ids.include?(tag.id) }, tag.id, false,
-                  class: "rounded" %>
+            <%= f.check_box :tag_ids, { multiple: true, checked: contact.tag_ids.include?(tag.id), class: "rounded" }, tag.id, false %>
             <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium text-white"
                   style="background-color: <%= tag.color %>;">
               <%= tag.name %>

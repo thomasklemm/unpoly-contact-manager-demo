@@ -2,20 +2,20 @@
 <div id="activities-panel">
 
   <%# Inline form to add a new activity %>
-  <div class="mb-4">
+  <div class="mb-6">
     <%= form_with model: [ @contact, @activity ],
-          "up-target" => "#activities-panel",
-          class: "space-y-2" do |f| %>
+          class: "space-y-2",
+          html: { "up-target" => "#activities-panel" } do |f| %>
 
       <div class="flex gap-2">
         <%= f.select :kind, Activity::KINDS.map { |k| [ k.capitalize, k ] },
               {},
-              class: "px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" %>
-        <%= f.text_field :body, placeholder: "Add a note, log a call…",
+              class: "form-input px-3 py-2 text-sm border border-gray-200 rounded-lg bg-surface-raised" %>
+        <%= f.text_field :body, placeholder: "Add a note, log a call...",
               autocomplete: "off",
-              class: "flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+              class: "form-input flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg bg-surface-raised" %>
         <%= f.submit "Add",
-              class: "px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 cursor-pointer" %>
+              class: "px-4 py-2 text-sm font-medium text-white bg-accent rounded-lg hover:bg-accent-dark cursor-pointer transition-colors shadow-sm" %>
       </div>
 
       <% if @activity.errors[:body].any? %>
@@ -26,9 +26,9 @@
 
   <%# Activity timeline %>
   <% if @activities.empty? %>
-    <p class="text-sm text-gray-400 text-center py-4">No activity yet</p>
+    <p class="text-sm text-gray-400 text-center py-6">No activity yet</p>
   <% else %>
-    <div class="space-y-3">
+    <div class="space-y-4">
       <% @activities.each do |activity| %>
         <%= render 'activities/activity', activity: activity %>
       <% end %>

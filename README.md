@@ -3,9 +3,15 @@
 > A production-quality Rails contact manager — no React, no JSON API, no build step.
 > Server-rendered HTML all the way. [Unpoly 3](https://unpoly.com) handles the rest.
 
-**<a href="https://unpoly-contact-manager-demo.fly.dev" target="_blank">→ Live demo</a>**
-
 ![Contact detail view](public/screenshots/02-contact-detail.png)
+
+---
+
+## Live Demo
+
+<a href="https://unpoly-contact-manager-demo.fly.dev" target="_blank">→ unpoly-contact-manager-demo.fly.dev</a>
+
+The first request may take 1–2 seconds. The app runs on Fly.io with `auto_stop_machines = "suspend"` — it suspends when idle and wakes on the next request by restoring a memory snapshot. Subsequent requests are instant.
 
 ---
 

@@ -33,8 +33,9 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
-# Agent skills
-/.agents/
+# Agent tooling (ignore everything except skills)
+/.agents/*
+!/.agents/skills/
 /.pi/
 /.firecrawl/
 

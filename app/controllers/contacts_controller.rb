@@ -133,13 +133,13 @@ class ContactsController < ApplicationController
 
     case params[:sort]
     when "first_name"
-      contacts.order(:first_name, :last_name)
+      contacts.order(Arel.sql("LOWER(contacts.first_name), LOWER(contacts.last_name)"))
     when "created_at"
       contacts.order(created_at: :desc)
     when "company"
-      contacts.left_joins(:company).order(Arel.sql("COALESCE(companies.name, ''), contacts.last_name, contacts.first_name"))
+      contacts.left_joins(:company).order(Arel.sql("LOWER(COALESCE(companies.name, '')), LOWER(contacts.last_name), LOWER(contacts.first_name)"))
     else
-      contacts.order(:last_name, :first_name)
+      contacts.order(Arel.sql("LOWER(contacts.last_name), LOWER(contacts.first_name)"))
     end
   end
 

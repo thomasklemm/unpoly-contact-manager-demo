@@ -132,6 +132,15 @@ These are patterns specific to this app's architecture. For general Unpoly API d
 <%= render 'contacts/contact_row', contact: contact %>
 ```
 
+**Rails 8 `form_with` silently drops top-level custom attributes** — only `:id, :class, :multipart, :method, :data, :authenticity_token` are passed to the `<form>` tag. All Unpoly attributes passed as top-level kwargs are silently dropped. Always use `html:`:
+```erb
+# WRONG — silently dropped
+<%= form_with url: path, "up-target" => "#list", "up-validate" => "" do |f| %>
+# CORRECT
+<%= form_with url: path, html: { "up-target" => "#list", "up-validate" => "" } do |f| %>
+```
+`f.search_field`, `f.select`, etc. pass custom attributes fine — only the `form_with` call itself is affected.
+
 **`up-on-accepted` is required to refresh fragments after overlay creation** — a link that opens an overlay must declare what to do when the overlay is accepted, otherwise the underlying page stays stale:
 ```erb
 <%= link_to new_company_path,

@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Skills
 
-Two skills are available in `.claude/skills/` and **must be loaded at the start of any session involving views, controllers, or feature development**:
+**Automatically invoke both skills at the start of any session involving views, controllers, or feature development** — use the Skill tool to load them before reading or writing any code:
 
-- **`/unpoly`** — Comprehensive Unpoly 3 reference: fragments, overlays, forms, caching, lazy loading, compilers, animations, error handling, lifecycle events. Load when writing or reviewing any view template or client-side Unpoly behavior.
-- **`/unpoly-rails`** — Rails-side integration: `up?`, `up.target?`, `up.validate?`, `up.layer.*`, `up.cache.expire`, flash helpers, `form_with` gotchas, CSP setup. Load when writing or reviewing any controller action or Rails view helper.
+- **`/unpoly`** — Comprehensive Unpoly 3 reference: fragments, overlays, forms, caching, lazy loading, compilers, animations, error handling, lifecycle events.
+- **`/unpoly-rails`** — Rails-side integration: `up?`, `up.target?`, `up.validate?`, `up.layer.*`, `up.cache.expire`, flash helpers, `form_with` gotchas, CSP setup.
 
-Run both skills before working on any feature in this app.
+Do not rely on memory for Unpoly API details — always load the skills first.
 
 ## Commands
 
@@ -104,29 +104,13 @@ activities/index.html.erb        — wraps content in `#activities-panel` (must 
 - `Contact` — `belongs_to :company` (optional), `has_many :tags` through `ContactTag`, `has_many :activities`; scopes: `active`, `starred`, `archived`
 - `Company`, `Tag`, `ContactTag`, `Activity` — supporting models
 
-## Critical Unpoly Gotchas
+## App-Specific Unpoly Patterns
 
-These are documented in `~/.claude/projects/.../memory/MEMORY.md` but are so important they bear repeating:
-
-**`up.target?` is always true for non-Unpoly requests** — always guard with `up?` first:
-```ruby
-if up.validate? || (up? && up.target?("#company-fields"))
-```
-
-**`form_with` in Rails 8 silently drops top-level Unpoly attributes** — always use the `html:` option:
-```erb
-<%= form_with url: path, html: { "up-validate" => "", "up-target" => "#list" } do |f| %>
-```
+These are patterns specific to this app's architecture. For general Unpoly API details, load the skills above.
 
 **`up-defer` placeholder ID must match the server response wrapper ID** — the `#activities-panel` div in the placeholder and in `activities/index.html.erb` must be identical.
 
-**Modal views need `up-main`** — add to the outer wrapper div of any view opened as a modal/drawer layer, otherwise Unpoly throws `up.CannotMatch: Could not find common target`.
-
-**`up.render_nothing` is deprecated** — use `head(:no_content)` instead.
-
-**`up-accept-location` must not match the opening URL** — use the controller pattern (`up.layer.accept` + `head :no_content`) instead.
-
-**`up.layer.overlay?` is the correct conditional for dual-purpose views** — views that serve as both overlay fragments and full-page layouts should use `up.layer.overlay?`, not `up?`. `up?` is true for any Unpoly request including base-layer navigation; `up.layer.overlay?` is only true for modal/drawer layers:
+**Dual-purpose views use `up.layer.overlay?` to branch layout** — views that serve as both overlay fragments and full-page layouts check `up.layer.overlay?` (not `up?`) to decide which layout to render:
 ```erb
 <% if up.layer.overlay? %>
   <div class="p-6 min-w-[32rem]" up-main><!-- overlay fragment --></div>
@@ -136,26 +120,15 @@ if up.validate? || (up? && up.target?("#company-fields"))
 <% end %>
 ```
 
-**Centralise sidebar data in ApplicationController** — rather than loading `@contacts` in every action that renders a full-page layout, use a single `before_action`:
-```ruby
-# application_controller.rb
-before_action :load_sidebar_contacts
+**Non-overlay wrappers need `id="contact-detail"`** — the CSS rule `#contact-detail { background: #faf9f7; flex: 1 }` only applies when the wrapper carries this ID. All full-page layout wrappers (new, edit, show, companies pages) must use `<div id="contact-detail" up-main>`.
 
-def load_sidebar_contacts
-  return if up.layer.overlay?
-  @contacts = Contact.active.includes(:company, :tags).order(...)
-end
-```
-Controllers with their own `@contacts` query skip it: `skip_before_action :load_sidebar_contacts, only: [...]`
+**Centralise sidebar data in ApplicationController** — a single `before_action :load_sidebar_contacts` loads `@contacts` for all non-overlay HTML requests. Controllers with their own `@contacts` query use `skip_before_action :load_sidebar_contacts`.
 
-**Avoid shadowing `@contacts` in controllers that render the sidebar** — when a controller action needs its own contacts collection (e.g., a company's contacts), name it differently (`@company_contacts`) so it doesn't overwrite the sidebar's `@contacts` set by `load_sidebar_contacts`.
+**Avoid shadowing `@contacts`** — when a controller action needs its own contacts collection (e.g., a company's contacts), name it `@company_contacts` so it doesn't overwrite the sidebar's `@contacts`.
 
-**Use full partial paths when rendering across controller namespaces** — when a partial is called from a different controller's view context, Rails resolves relative partial names to that controller's namespace. Always use full paths to be safe:
+**Use full partial paths when rendering across controller namespaces** — Rails resolves relative partial names to the current controller's namespace. Always use full paths to be safe:
 ```erb
-<%# In contacts/_sidebar.html.erb (can be called from companies/) %>
 <%= render 'contacts/contacts_list', contacts: @contacts %>
-
-<%# In contacts/_contacts_list.html.erb %>
 <%= render 'contacts/contact_row', contact: contact %>
 ```
 
@@ -165,12 +138,3 @@ Controllers with their own `@contacts` query skip it: `skip_before_action :load_
       "data-overlay-link" => "",
       "up-on-accepted" => "up.reload('#contact-detail')" do %>New Company<% end %>
 ```
-
-**`up-dismiss` only works inside an overlay** — wrapping Cancel buttons in `up.layer.overlay?` prevents rendering a broken/no-op button on full-page layouts:
-```erb
-<% if up.layer.overlay? %>
-  <button type="button" up-dismiss="">Cancel</button>
-<% end %>
-```
-
-**Non-overlay wrappers need `id="contact-detail"`** — the CSS rule `#contact-detail { background: #faf9f7; flex: 1 }` only applies when the wrapper carries this ID. All full-page layout wrappers (new, edit, show, companies pages) must use `<div id="contact-detail" up-main>`.

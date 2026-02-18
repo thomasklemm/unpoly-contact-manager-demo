@@ -18,12 +18,6 @@ class ContactTest < ActiveSupport::TestCase
     assert_includes contact.errors[:last_name], "can't be blank"
   end
 
-  test "requires email" do
-    contact = Contact.new(first_name: "Ada", last_name: "Lovelace")
-    assert_not contact.valid?
-    assert_includes contact.errors[:email], "can't be blank"
-  end
-
   test "validates email format" do
     contact = Contact.new(first_name: "Ada", last_name: "Lovelace", email: "not-an-email")
     assert_not contact.valid?

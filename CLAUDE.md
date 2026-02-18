@@ -56,9 +56,11 @@ Global Unpoly configuration and all client-side behavior live here. Key patterns
 
 ### Controllers
 
+**`ApplicationController`** — has a `before_action :load_sidebar_contacts` that loads `@contacts` for every non-overlay HTML request. This keeps sidebar data centralised rather than scattered across every action. Actions that manage their own `@contacts` query (index, show, star, archive, destroy in ContactsController; index, show in CompaniesController) use `skip_before_action :load_sidebar_contacts`.
+
 **`ContactsController`** — the main controller. Handles validation-only requests (`up.validate?`) and Unpoly target checks (`up? && up.target?("#company-fields")`) before saving. On success in an overlay, calls `up.layer.accept(contact_path(@contact))` + `head :no_content` instead of redirecting.
 
-**`CompaniesController`** — modal subinteraction only (new/create). Accepts the overlay with the new company's ID so the parent contact form's select can update without re-rendering.
+**`CompaniesController`** — full CRUD. `new`/`create` can be opened as an overlay (sub-interaction from the contact form) or navigated to directly. Accepts the overlay with `{ id:, name: }` so the parent contact form's select can update. Uses `@company_contacts` (not `@contacts`) in `show` to avoid shadowing the sidebar's `@contacts`.
 
 **`ActivitiesController`** — lazy-loaded via `up-defer`. The `index` action renders the timeline; `create` adds a new activity inline.
 
@@ -73,12 +75,18 @@ Flash is rendered in `app/views/shared/_flash.html.erb` with `#flash[up-hungry]`
 ### Views structure
 
 ```
-contacts/index.html.erb          — two-panel shell (no layout `<main>`, yields directly)
-contacts/_contacts_list.html.erb — filter tabs + contact rows fragment
+contacts/index.html.erb          — two-panel shell (sidebar + empty detail panel)
+contacts/show.html.erb           — two-panel shell with contact detail loaded
+contacts/new.html.erb            — overlay? → modal fragment; else → sidebar + form in #contact-detail
+contacts/edit.html.erb           — overlay? → modal fragment; else → sidebar + form in #contact-detail
+contacts/_sidebar.html.erb       — extracted sidebar partial; accepts q: and filter: locals
+contacts/_contacts_list.html.erb — filter tabs + contact rows fragment (uses full paths: contacts/contact_row)
 contacts/_contact_row.html.erb   — up-target, up-preload, up-instant, up-alias
 contacts/_contact_detail.html.erb — star, archive, delete, up-defer activities panel
 contacts/_form.html.erb          — up-validate on form, reactive company select (up-watch)
-companies/new.html.erb           — modal form, needs `up-main` on outer wrapper
+companies/index.html.erb         — sidebar + companies list in #contact-detail; up-on-accepted reloads list
+companies/show.html.erb          — overlay? → modal fragment; else → sidebar + company detail
+companies/new.html.erb           — overlay? → modal fragment; else → sidebar + form in #contact-detail
 activities/index.html.erb        — wraps content in `#activities-panel` (must match up-defer id)
 ```
 
@@ -108,3 +116,52 @@ if up.validate? || (up? && up.target?("#company-fields"))
 **`up.render_nothing` is deprecated** — use `head(:no_content)` instead.
 
 **`up-accept-location` must not match the opening URL** — use the controller pattern (`up.layer.accept` + `head :no_content`) instead.
+
+**`up.layer.overlay?` is the correct conditional for dual-purpose views** — views that serve as both overlay fragments and full-page layouts should use `up.layer.overlay?`, not `up?`. `up?` is true for any Unpoly request including base-layer navigation; `up.layer.overlay?` is only true for modal/drawer layers:
+```erb
+<% if up.layer.overlay? %>
+  <div class="p-6 min-w-[32rem]" up-main><!-- overlay fragment --></div>
+<% else %>
+  <%= render 'sidebar' %>
+  <div id="contact-detail" up-main><!-- full two-panel layout --></div>
+<% end %>
+```
+
+**Centralise sidebar data in ApplicationController** — rather than loading `@contacts` in every action that renders a full-page layout, use a single `before_action`:
+```ruby
+# application_controller.rb
+before_action :load_sidebar_contacts
+
+def load_sidebar_contacts
+  return if up.layer.overlay?
+  @contacts = Contact.active.includes(:company, :tags).order(...)
+end
+```
+Controllers with their own `@contacts` query skip it: `skip_before_action :load_sidebar_contacts, only: [...]`
+
+**Avoid shadowing `@contacts` in controllers that render the sidebar** — when a controller action needs its own contacts collection (e.g., a company's contacts), name it differently (`@company_contacts`) so it doesn't overwrite the sidebar's `@contacts` set by `load_sidebar_contacts`.
+
+**Use full partial paths when rendering across controller namespaces** — when a partial is called from a different controller's view context, Rails resolves relative partial names to that controller's namespace. Always use full paths to be safe:
+```erb
+<%# In contacts/_sidebar.html.erb (can be called from companies/) %>
+<%= render 'contacts/contacts_list', contacts: @contacts %>
+
+<%# In contacts/_contacts_list.html.erb %>
+<%= render 'contacts/contact_row', contact: contact %>
+```
+
+**`up-on-accepted` is required to refresh fragments after overlay creation** — a link that opens an overlay must declare what to do when the overlay is accepted, otherwise the underlying page stays stale:
+```erb
+<%= link_to new_company_path,
+      "data-overlay-link" => "",
+      "up-on-accepted" => "up.reload('#contact-detail')" do %>New Company<% end %>
+```
+
+**`up-dismiss` only works inside an overlay** — wrapping Cancel buttons in `up.layer.overlay?` prevents rendering a broken/no-op button on full-page layouts:
+```erb
+<% if up.layer.overlay? %>
+  <button type="button" up-dismiss="">Cancel</button>
+<% end %>
+```
+
+**Non-overlay wrappers need `id="contact-detail"`** — the CSS rule `#contact-detail { background: #faf9f7; flex: 1 }` only applies when the wrapper carries this ID. All full-page layout wrappers (new, edit, show, companies pages) must use `<div id="contact-detail" up-main>`.

@@ -8,9 +8,10 @@
     <%= render 'form', company: @company %>
   </div>
 <% else %>
-  <%# Direct navigation or page refresh — center the form in the full layout %>
+  <%# Direct navigation or page refresh — render full two-panel layout %>
+  <%= render 'contacts/sidebar' %>
   <div id="contact-detail" class="flex items-center justify-center" up-main>
-    <div class="p-8 max-w-md w-full">
+    <div class="max-w-2xl mx-auto px-8 py-8 w-full">
       <div class="mb-5">
         <h2 class="font-display text-2xl text-gray-900">New Company</h2>
         <p class="text-xs text-gray-400 mt-0.5">Create a company record</p>

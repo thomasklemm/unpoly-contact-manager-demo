@@ -45,6 +45,6 @@
   <%# Contact list fragment — replaced on search/filter changes %>
   <%# data-filter is read by up.compiler to keep the search form's hidden field in sync %>
   <div id="contacts-list" class="flex-1 overflow-y-auto" data-filter="<%= sidebar_filter %>">
-    <%= render 'contacts_list', contacts: (@contacts || Contact.none) %>
+    <%= render 'contacts/contacts_list', contacts: (@contacts || Contact.none) %>
   </div>
 </div>

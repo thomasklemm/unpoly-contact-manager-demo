@@ -1,6 +1,9 @@
 class CompaniesController < ApplicationController
   after_action :expire_contacts_cache, only: [ :create ]
 
+  # index and show have their own data; no contacts sidebar on those pages.
+  skip_before_action :load_sidebar_contacts, only: [ :index, :show ]
+
   def index
     @companies = Company.order(:name)
   end

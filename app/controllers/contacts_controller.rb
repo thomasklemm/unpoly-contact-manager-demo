@@ -2,6 +2,9 @@ class ContactsController < ApplicationController
   before_action :set_contact, only: [ :show, :edit, :update, :destroy, :star, :archive ]
   after_action :expire_contacts_cache, only: [ :create, :update, :destroy, :star, :archive ]
 
+  # These actions manage their own @contacts query or redirect without rendering a view.
+  skip_before_action :load_sidebar_contacts, only: [ :index, :show, :star, :archive, :destroy ]
+
   def index
     @contacts = filtered_contacts
   end
@@ -20,7 +23,6 @@ class ContactsController < ApplicationController
     @contact = Contact.new
     @companies = Company.order(:name)
     @tags = Tag.order(:name)
-    @contacts = up.layer.overlay? ? Contact.none : filtered_contacts
   end
 
   def create
@@ -48,7 +50,6 @@ class ContactsController < ApplicationController
     else
       @companies = Company.order(:name)
       @tags = Tag.order(:name)
-      @contacts = up.layer.overlay? ? Contact.none : filtered_contacts
       render :new, status: :unprocessable_entity
     end
   end
@@ -56,7 +57,6 @@ class ContactsController < ApplicationController
   def edit
     @companies = Company.order(:name)
     @tags = Tag.order(:name)
-    @contacts = up.layer.overlay? ? Contact.none : filtered_contacts
   end
 
   def update
@@ -81,7 +81,6 @@ class ContactsController < ApplicationController
     else
       @companies = Company.order(:name)
       @tags = Tag.order(:name)
-      @contacts = up.layer.overlay? ? Contact.none : filtered_contacts
       render :edit, status: :unprocessable_entity
     end
   end

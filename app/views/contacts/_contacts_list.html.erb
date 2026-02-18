@@ -41,7 +41,7 @@
     </div>
   <% else %>
     <% contacts.each do |contact| %>
-      <%= render 'contact_row', contact: contact %>
+      <%= render 'contacts/contact_row', contact: contact %>
     <% end %>
   <% end %>
 </div>

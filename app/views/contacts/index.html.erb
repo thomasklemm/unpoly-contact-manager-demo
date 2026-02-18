@@ -9,7 +9,7 @@
       <div class="flex items-center gap-1.5">
         <%= link_to new_contact_path,
               "data-overlay-link" => "",
-              "up-on-accepted" => "up.reload('#contacts-list').then(function(){ var m = (event.value || '').match(/\\/contacts\\/(\\d+)/); if(m){ var r = document.querySelector('.contact-row-' + m[1]); if(r) setTimeout(function(){ r.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 50); } })",
+              "up-on-accepted" => "var url = event.value; up.render({ target: '#contact-detail', url: url, history: true }); up.reload('#contacts-list').then(function(){ var m = (url || '').match(/\\/contacts\\/(\\d+)/); if(m){ var r = document.querySelector('.contact-row-' + m[1]); if(r) setTimeout(function(){ r.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 50); } })",
               class: "flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent/20 text-accent hover:bg-accent/30 transition-colors text-sm font-medium",
               title: "New Contact" do %>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>

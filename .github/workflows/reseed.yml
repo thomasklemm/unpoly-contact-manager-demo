@@ -15,6 +15,6 @@ jobs:
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Reseed database
-        run: fly ssh console -a unpoly-contact-manager-demo -C "bin/rails db:seed:replant"
+        run: flyctl ssh console -a unpoly-contact-manager-demo -C "bin/rails db:seed:replant"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

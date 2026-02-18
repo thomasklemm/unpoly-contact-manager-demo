@@ -1,26 +1,59 @@
-<div class="p-6" up-main>
-  <h2 class="font-display text-3xl text-gray-900 leading-tight"><%= @company.name %></h2>
+<% if up.layer.overlay? %>
+  <%# Unpoly overlay request (modal) — render just the content fragment %>
+  <div class="p-6" up-main>
+    <h2 class="font-display text-3xl text-gray-900 leading-tight"><%= @company.name %></h2>
 
-  <% if @company.website.present? %>
-    <p class="mt-1">
-      <a href="<%= @company.website %>" target="_blank" rel="noopener"
-         class="text-sm text-accent hover:text-accent-dark transition-colors"><%= @company.website %></a>
-    </p>
-  <% end %>
+    <% if @company.website.present? %>
+      <p class="mt-1">
+        <a href="<%= @company.website %>" target="_blank" rel="noopener"
+           class="text-sm text-accent hover:text-accent-dark transition-colors"><%= @company.website %></a>
+      </p>
+    <% end %>
 
-  <p class="text-sm text-gray-500 mt-2"><%= pluralize(@contacts.count, 'contact') %></p>
+    <p class="text-sm text-gray-500 mt-2"><%= pluralize(@company_contacts.count, 'contact') %></p>
 
-  <% if @contacts.any? %>
-    <div class="mt-6 space-y-2">
-      <% @contacts.each do |contact| %>
-        <%= link_to contact_path(contact),
-              "up-target" => "#contact-detail",
-              "up-layer" => "root",
-              class: "block p-3 rounded-lg bg-surface-raised border border-gray-200/60 hover:border-accent/30 transition-colors" do %>
-          <p class="text-sm font-medium text-gray-900"><%= contact.full_name %></p>
-          <p class="text-xs text-gray-500 mt-0.5"><%= contact.email %></p>
+    <% if @company_contacts.any? %>
+      <div class="mt-6 space-y-2">
+        <% @company_contacts.each do |contact| %>
+          <%= link_to contact_path(contact),
+                "up-target" => "#contact-detail",
+                "up-layer" => "root",
+                class: "block p-3 rounded-lg bg-surface-raised border border-gray-200/60 hover:border-accent/30 transition-colors" do %>
+            <p class="text-sm font-medium text-gray-900"><%= contact.full_name %></p>
+            <p class="text-xs text-gray-500 mt-0.5"><%= contact.email %></p>
+          <% end %>
         <% end %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <%# Direct navigation — render full two-panel layout %>
+  <%= render 'contacts/sidebar' %>
+  <div id="contact-detail" up-main>
+    <div class="max-w-2xl mx-auto px-8 py-8">
+      <div class="mb-6">
+        <h2 class="font-display text-3xl text-gray-900 leading-tight"><%= @company.name %></h2>
+        <% if @company.website.present? %>
+          <p class="mt-1">
+            <a href="<%= @company.website %>" target="_blank" rel="noopener"
+               class="text-sm text-accent hover:text-accent-dark transition-colors"><%= @company.website %></a>
+          </p>
+        <% end %>
+        <p class="text-sm text-gray-500 mt-2"><%= pluralize(@company_contacts.count, 'contact') %></p>
+      </div>
+
+      <% if @company_contacts.any? %>
+        <div class="space-y-2">
+          <% @company_contacts.each do |contact| %>
+            <%= link_to contact_path(contact),
+                  "up-target" => "#contact-detail",
+                  class: "block p-3 rounded-lg bg-white border border-gray-200/60 hover:border-accent/30 transition-colors" do %>
+              <p class="text-sm font-medium text-gray-900"><%= contact.full_name %></p>
+              <p class="text-xs text-gray-500 mt-0.5"><%= contact.email %></p>
+            <% end %>
+          <% end %>
+        </div>
       <% end %>
     </div>
-  <% end %>
-</div>
+  </div>
+<% end %>

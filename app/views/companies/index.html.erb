@@ -1,14 +1,41 @@
-<div class="p-6 max-w-xl mx-auto">
-  <h2 class="text-xl font-bold text-gray-900 mb-4">Companies</h2>
-  <% @companies.each do |company| %>
-    <div class="flex items-center justify-between py-3 border-b border-gray-100">
+<%= render 'contacts/sidebar' %>
+
+<div id="contact-detail">
+  <div class="max-w-2xl mx-auto px-8 py-8">
+    <div class="flex items-center justify-between mb-6">
       <div>
-        <p class="font-medium text-gray-900"><%= company.name %></p>
-        <% if company.website.present? %>
-          <p class="text-sm text-gray-500"><%= company.website %></p>
+        <h2 class="font-display text-2xl text-gray-900">Companies</h2>
+        <p class="text-xs text-gray-400 mt-0.5"><%= pluralize(@companies.size, 'company') %></p>
+      </div>
+      <%= link_to new_company_path,
+            "data-overlay-link" => "",
+            class: "flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent/10 text-accent hover:bg-accent/20 transition-colors text-sm font-medium" do %>
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
+        New Company
+      <% end %>
+    </div>
+
+    <% if @companies.any? %>
+      <div class="space-y-1">
+        <% @companies.each do |company| %>
+          <%= link_to company_path(company),
+                "up-target" => "#contact-detail",
+                class: "flex items-center justify-between px-4 py-3 rounded-xl bg-white border border-gray-200/60 hover:border-accent/30 hover:shadow-sm transition-all group" do %>
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-gray-900 group-hover:text-accent transition-colors"><%= company.name %></p>
+              <% if company.website.present? %>
+                <p class="text-xs text-gray-400 mt-0.5 truncate"><%= company.website %></p>
+              <% end %>
+            </div>
+            <span class="text-xs text-gray-400 tabular-nums ml-4 flex-shrink-0"><%= pluralize(company.contacts.count, 'contact') %></span>
+          <% end %>
         <% end %>
       </div>
-      <span class="text-xs text-gray-400"><%= company.contacts.count %> contacts</span>
-    </div>
-  <% end %>
+    <% else %>
+      <div class="text-center py-16">
+        <p class="font-display text-xl text-gray-400 italic">No companies yet</p>
+        <p class="text-xs text-gray-400 mt-1.5">Add a company to get started</p>
+      </div>
+    <% end %>
+  </div>
 </div>

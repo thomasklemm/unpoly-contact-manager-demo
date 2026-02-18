@@ -31,6 +31,12 @@
   <%= render 'contacts/sidebar' %>
   <div id="contact-detail" up-main>
     <div class="max-w-2xl mx-auto px-8 py-8">
+      <%= link_to companies_path,
+            "up-target" => "#contact-detail",
+            class: "inline-flex items-center gap-1 text-xs text-gray-400 hover:text-accent transition-colors mb-5" do %>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Companies
+      <% end %>
       <div class="mb-6">
         <h2 class="font-display text-3xl text-gray-900 leading-tight"><%= @company.name %></h2>
         <% if @company.website.present? %>

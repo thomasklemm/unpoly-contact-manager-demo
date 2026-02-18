@@ -13,6 +13,19 @@
           "up-target" => "#contacts-list" %>
   </div>
 
+  <%# Sort options %>
+  <div class="flex items-center gap-1 mt-2">
+    <span class="text-[10px] text-gray-600 mr-1">Sort:</span>
+    <% sort_options = [["Name", nil], ["First", "first_name"], ["Added", "created_at"], ["Company", "company"]] %>
+    <% current_sort = params[:sort] %>
+    <% sort_options.each do |label, sort_value| %>
+      <%= link_to label,
+            contacts_path(sort: sort_value, filter: params[:filter], q: params[:q]),
+            class: "filter-pill px-2 py-0.5 rounded-full text-[10px] font-medium #{current_sort == sort_value ? 'active' : ''}",
+            "up-target" => "#contacts-list" %>
+    <% end %>
+  </div>
+
   <span class="text-xs text-gray-500"><%= contacts.size %> contact<%= contacts.size == 1 ? "" : "s" %></span>
 </div>
 

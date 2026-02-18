@@ -55,3 +55,46 @@ window.toggleOverlayStyle = function() {
 up.compiler('[data-overlay-toggle]', function(element) {
   element.setAttribute('data-current', getOverlayStyle())
 })
+
+// Helper: reload contacts list while preserving its scroll position
+window.reloadContactsListPreservingScroll = function() {
+  var list = document.getElementById('contacts-list');
+  var scrollTop = list ? list.scrollTop : 0;
+  up.reload('#contacts-list').then(function() {
+    var newList = document.getElementById('contacts-list');
+    if (newList) newList.scrollTop = scrollTop;
+  });
+};
+
+// Flash toast auto-dismiss: fade out after 4 seconds
+up.compiler('.flash-toast', function(element) {
+  var timer = setTimeout(function() {
+    element.classList.add('removing');
+    setTimeout(function() { element.remove(); }, 300);
+  }, 4000);
+  return function() { clearTimeout(timer); };
+});
+
+// Highlight the active contact row in the sidebar list.
+// Runs when #contacts-list is inserted/updated (search, filter, reload).
+up.compiler('#contacts-list', function() {
+  var url = up.layer.location;
+  var match = url && url.match(/\/contacts\/(\d+)/);
+  if (match) {
+    var row = document.querySelector('.contact-row-' + match[1]);
+    if (row) row.classList.add('selected');
+  }
+});
+
+// When the contact detail panel updates, re-sync the selected row highlight.
+up.compiler('#contact-detail', function() {
+  document.querySelectorAll('.contact-row').forEach(function(row) {
+    row.classList.remove('selected');
+  });
+  var url = up.layer.location;
+  var match = url && url.match(/\/contacts\/(\d+)/);
+  if (match) {
+    var row = document.querySelector('.contact-row-' + match[1]);
+    if (row) row.classList.add('selected');
+  }
+});

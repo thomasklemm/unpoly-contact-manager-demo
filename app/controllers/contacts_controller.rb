@@ -131,7 +131,16 @@ class ContactsController < ApplicationController
       )
     end
 
-    contacts.order(:last_name, :first_name)
+    case params[:sort]
+    when "first_name"
+      contacts.order(:first_name, :last_name)
+    when "created_at"
+      contacts.order(created_at: :desc)
+    when "company"
+      contacts.left_joins(:company).order(Arel.sql("COALESCE(companies.name, ''), contacts.last_name, contacts.first_name"))
+    else
+      contacts.order(:last_name, :first_name)
+    end
   end
 
   def expire_contacts_cache

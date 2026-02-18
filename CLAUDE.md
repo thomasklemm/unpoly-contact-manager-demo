@@ -2,6 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Skills
+
+Two skills are available in `.claude/skills/` and **must be loaded at the start of any session involving views, controllers, or feature development**:
+
+- **`/unpoly`** — Comprehensive Unpoly 3 reference: fragments, overlays, forms, caching, lazy loading, compilers, animations, error handling, lifecycle events. Load when writing or reviewing any view template or client-side Unpoly behavior.
+- **`/unpoly-rails`** — Rails-side integration: `up?`, `up.target?`, `up.validate?`, `up.layer.*`, `up.cache.expire`, flash helpers, `form_with` gotchas, CSP setup. Load when writing or reviewing any controller action or Rails view helper.
+
+Run both skills before working on any feature in this app.
+
 ## Commands
 
 ```bash

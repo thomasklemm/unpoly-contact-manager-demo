@@ -13,6 +13,8 @@
 
 The first request may take 1–2 seconds. The app runs on Fly.io with `auto_stop_machines = "suspend"` — it suspends when idle and wakes on the next request by restoring a memory snapshot. Subsequent requests are instant.
 
+**Deployment cost: ~$0.15/month.** The machine (shared CPU, 256 MB RAM) is only billed while running — thanks to suspend mode, that's near zero for a low-traffic app. The only fixed cost is the 1 GB SQLite volume at $0.15/GB/month. No Node.js, no build pipeline, no separate API server, nothing to scale independently. A single Puma process serving server-rendered HTML is all it takes.
+
 ---
 
 ## What is this?

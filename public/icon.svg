@@ -1,3 +1,14 @@
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="256" cy="256" r="256" fill="red"/>
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e4a878"/>
+      <stop offset="100%" stop-color="#b87040"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square background — warm amber gradient matching app accent -->
+  <rect width="100" height="100" rx="22" fill="url(#bg)"/>
+  <!-- Head -->
+  <circle cx="50" cy="35" r="18" fill="rgba(255,255,255,0.92)"/>
+  <!-- Shoulders / body -->
+  <path d="M 14 96 C 14 58 86 58 86 96 Z" fill="rgba(255,255,255,0.92)"/>
 </svg>

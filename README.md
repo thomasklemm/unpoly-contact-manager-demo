@@ -13,6 +13,8 @@
 
 The first request may take 1–2 seconds. The app runs on Fly.io with `auto_stop_machines = "suspend"` — it suspends when idle and wakes on the next request by restoring a memory snapshot. Subsequent requests are instant.
 
+**The database is reset to seed data every hour.** Feel free to create, edit, and delete contacts — it's a sandbox.
+
 **Deployment cost breakdown:**
 
 | Resource | Spec | Cost |

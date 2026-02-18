@@ -7,7 +7,13 @@ class ContactsController < ApplicationController
   end
 
   def show
-    @contacts = filtered_contacts
+    # Skip the full contacts query when Unpoly only needs #contact-detail.
+    # Non-Unpoly requests (full page loads) always load the sidebar list.
+    @contacts = if up? && !up.target?("#contacts-list")
+      Contact.none
+    else
+      filtered_contacts
+    end
   end
 
   def new
@@ -84,7 +90,16 @@ class ContactsController < ApplicationController
 
   def star
     @contact.update!(starred: !@contact.starred?)
-    redirect_to contact_path(@contact)
+    if up?
+      # Render directly — no redirect round-trip needed.
+      # Unpoly targets #contact-detail; the hidden contact row in the response
+      # triggers up-hungry to update the sidebar row automatically.
+      # @contacts not loaded — Unpoly won't touch #contacts-list.
+      @contacts = Contact.none
+      render :show
+    else
+      redirect_to contact_path(@contact)
+    end
   end
 
   def archive

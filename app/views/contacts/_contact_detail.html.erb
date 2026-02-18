@@ -19,7 +19,6 @@
       <%# Star toggle — optimistic preview %>
       <%= button_to star_contact_path(contact), method: :patch,
             "up-target" => "#contact-detail",
-            "up-on-finished" => "reloadContactsListPreservingScroll()",
             "up-preview" => "toggle-star",
             class: "star-icon #{contact.starred? ? 'starred' : 'unstarred'} w-9 h-9 flex items-center justify-center rounded-lg hover:bg-black/5 text-lg border-0 bg-transparent cursor-pointer transition-colors",
             title: contact.starred? ? "Unstar" : "Star" do %>

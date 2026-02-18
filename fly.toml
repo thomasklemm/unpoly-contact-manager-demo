@@ -11,6 +11,9 @@ primary_region = "fra"
   # Thruster (the HTTP proxy wrapping Rails) defaults to port 80, which requires root.
   # The container runs as uid 1000, so use a non-privileged port instead.
   HTTP_PORT = "8080"
+  # 2 Puma workers × 3 threads = 6 concurrent request slots.
+  # 512MB RAM comfortably fits 2 workers (~100MB each) + OS + Thruster overhead.
+  WEB_CONCURRENCY = "2"
 
 # SQLite databases live on a persistent volume so they survive deploys and restarts.
 # The database.yml uses storage/ relative to the Rails root (/rails), so mount there.
@@ -36,6 +39,6 @@ primary_region = "fra"
     path = "/up"
 
 [[vm]]
-  memory = "256mb"
+  memory = "512mb"
   cpu_kind = "shared"
-  cpus = 1
+  cpus = 2

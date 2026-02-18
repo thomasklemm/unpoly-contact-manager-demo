@@ -69,8 +69,8 @@
   <% if contact.tags.any? %>
     <div class="flex flex-wrap gap-2 mb-6">
       <% contact.tags.each do |tag| %>
-        <span class="tag-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium text-white shadow-sm"
-              style="background-color: <%= tag.color %>;">
+        <span class="tag-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+              style="color: <%= tag.color %>; background-color: <%= tag.color %>1a; border: 1px solid <%= tag.color %>33;">
           <%= tag.name %>
         </span>
       <% end %>

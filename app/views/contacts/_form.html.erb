@@ -19,7 +19,7 @@
     <div class="contact-field-group">
       <%= f.label :first_name, class: "block text-xs font-medium text-gray-500 mb-1" %>
       <%= f.text_field :first_name,
-            autofocus: true,
+            autofocus: contact.new_record?,
             class: "form-input w-full px-3 py-2 text-sm border rounded-lg bg-white #{contact.errors[:first_name].any? ? 'border-red-400' : 'border-gray-200'}" %>
       <% if contact.errors[:first_name].any? %>
         <p class="mt-1 text-xs text-red-600"><%= contact.errors[:first_name].first %></p>
@@ -65,7 +65,7 @@
       </div>
       <%# Create company subinteraction — opens nested modal; up-on-accepted injects the new option %>
       <%= link_to "+ New company", new_company_path,
-            "up-layer" => "new modal",
+            "data-overlay-link" => "",
             "up-on-accepted" => "let opt = new Option(event.value.name, event.value.id, true, true); document.querySelector('#contact_company_id').add(opt); document.querySelector('#contact_company_id').value = event.value.id;",
             class: "inline-flex items-center gap-1 px-3 py-2 text-xs font-medium text-accent border border-accent/30 rounded-lg hover:bg-accent/5 whitespace-nowrap transition-colors" %>
     </div>

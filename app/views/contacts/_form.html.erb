@@ -58,8 +58,7 @@
         <%= f.select :company_id,
               options_from_collection_for_select(@companies, :id, :name, contact.company_id),
               { include_blank: "— None —" },
-              "up-watch" => "",
-              "up-target" => "#company-fields",
+              "up-watch" => "up.submit(this.closest('form'), { target: '#company-fields', failTarget: '#company-fields' })",
               "up-watch-delay" => "0",
               class: "form-input w-full px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white" %>
       </div>

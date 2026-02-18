@@ -1,7 +1,22 @@
-<div class="p-6" up-main>
-  <div class="mb-5">
-    <h2 class="font-display text-2xl text-gray-900">New Contact</h2>
-    <p class="text-xs text-gray-400 mt-0.5">Add a new contact to your list</p>
+<% if up.layer.overlay? %>
+  <%# Unpoly overlay request (modal/drawer) — render just the form fragment %>
+  <div class="p-6 min-w-[32rem]" up-main>
+    <div class="mb-5">
+      <h2 class="font-display text-2xl text-gray-900">New Contact</h2>
+      <p class="text-xs text-gray-400 mt-0.5">Add a new contact to your list</p>
+    </div>
+    <%= render 'form', contact: @contact %>
   </div>
-  <%= render 'form', contact: @contact %>
-</div>
+<% else %>
+  <%# Direct navigation or page refresh — render full two-panel layout %>
+  <%= render 'sidebar' %>
+  <div id="contact-detail" up-main>
+    <div class="p-6">
+      <div class="mb-5">
+        <h2 class="font-display text-2xl text-gray-900">New Contact</h2>
+        <p class="text-xs text-gray-400 mt-0.5">Add a new contact to your list</p>
+      </div>
+      <%= render 'form', contact: @contact %>
+    </div>
+  </div>
+<% end %>

@@ -20,6 +20,7 @@ class ContactsController < ApplicationController
     @contact = Contact.new
     @companies = Company.order(:name)
     @tags = Tag.order(:name)
+    @contacts = up.layer.overlay? ? Contact.none : filtered_contacts
   end
 
   def create
@@ -47,6 +48,7 @@ class ContactsController < ApplicationController
     else
       @companies = Company.order(:name)
       @tags = Tag.order(:name)
+      @contacts = up.layer.overlay? ? Contact.none : filtered_contacts
       render :new, status: :unprocessable_entity
     end
   end
@@ -54,6 +56,7 @@ class ContactsController < ApplicationController
   def edit
     @companies = Company.order(:name)
     @tags = Tag.order(:name)
+    @contacts = up.layer.overlay? ? Contact.none : filtered_contacts
   end
 
   def update
@@ -78,6 +81,7 @@ class ContactsController < ApplicationController
     else
       @companies = Company.order(:name)
       @tags = Tag.order(:name)
+      @contacts = up.layer.overlay? ? Contact.none : filtered_contacts
       render :edit, status: :unprocessable_entity
     end
   end

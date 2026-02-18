@@ -1,45 +1,6 @@
 <%# Full two-panel layout — same as index but with this contact's detail open %>
 
-<%# LEFT PANEL: full sidebar (identical to index) %>
-<div id="contacts-sidebar">
-  <div class="p-4 pb-3">
-    <div class="flex items-center justify-between mb-4">
-      <h1 class="font-display text-xl text-white tracking-tight">Contacts</h1>
-      <div class="flex items-center gap-1.5">
-        <%= link_to new_contact_path,
-              "data-overlay-link" => "",
-              "up-on-accepted" => "var url = event.value; up.render({ target: '#contact-detail', url: url, history: true }); up.reload('#contacts-list').then(function(){ var m = (url || '').match(/\\/contacts\\/(\\d+)/); if(m){ var r = document.querySelector('.contact-row-' + m[1]); if(r) setTimeout(function(){ r.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 50); } })",
-              class: "flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent/20 text-accent hover:bg-accent/30 transition-colors text-sm font-medium",
-              title: "New Contact" do %>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
-          New
-        <% end %>
-      </div>
-    </div>
-
-    <%= form_with url: contacts_path, method: :get,
-          id: "contacts-search-form",
-          class: "relative",
-          html: {
-            "up-target" => "#contacts-list",
-            "up-focus" => "keep",
-            "up-scroll" => "false"
-          } do |f| %>
-      <input type="hidden" id="search-filter" name="filter" value="">
-      <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <%= f.search_field :q,
-            placeholder: "Search contacts...",
-            autocomplete: "off",
-            "up-autosubmit" => "",
-            "up-watch-delay" => "300",
-            class: "sidebar-search w-full pl-9 pr-3 py-2 text-sm rounded-lg" %>
-    <% end %>
-  </div>
-
-  <div id="contacts-list" class="flex-1 overflow-y-auto" data-filter="">
-    <%= render 'contacts_list', contacts: @contacts %>
-  </div>
-</div>
+<%= render 'sidebar' %>
 
 <%# RIGHT PANEL: this contact's detail %>
 <div id="contact-detail" data-contact-id="<%= @contact.id %>">

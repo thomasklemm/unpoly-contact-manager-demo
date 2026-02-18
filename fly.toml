@@ -1,0 +1,41 @@
+# fly.toml - Fly.io deployment configuration
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+
+app = "unpoly-contact-manager-demo"
+primary_region = "fra"
+
+[build]
+
+[env]
+  RAILS_LOG_TO_STDOUT = "true"
+  # Thruster (the HTTP proxy wrapping Rails) defaults to port 80, which requires root.
+  # The container runs as uid 1000, so use a non-privileged port instead.
+  HTTP_PORT = "8080"
+
+# SQLite databases live on a persistent volume so they survive deploys and restarts.
+# The database.yml uses storage/ relative to the Rails root (/rails), so mount there.
+[[mounts]]
+  source = "unpoly_demo_storage"
+  destination = "/rails/storage"
+  initial_size = "3gb"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # Suspend (not stop) keeps memory state — near-instant resume vs ~10s cold start.
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [[http_service.checks]]
+    interval = "10s"
+    timeout = "5s"
+    grace_period = "30s"
+    method = "GET"
+    path = "/up"
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

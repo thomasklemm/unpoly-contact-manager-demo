@@ -6,4 +6,72 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   else
     driven_by :selenium, using: :headless_chrome, screen_size: [ 1400, 900 ]
   end
+
+  # ── Unpoly network helpers ──────────────────────────────────────────────────
+
+  # Wait until Unpoly has no requests in flight.
+  #
+  # This is essential before interacting with forms that use up-validate:
+  # clicking a new field blurs the previous one, which fires up-validate.
+  # The server re-renders the form. If you type into the new field while
+  # that re-render is in progress, your typed value may be lost.
+  #
+  # Call wait_for_unpoly_idle after the blur-triggering click and before
+  # typing into the next field.
+  def wait_for_unpoly_idle(timeout: 5)
+    sleep 0.05 # give Unpoly a tick to queue the request
+    start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    loop do
+      busy = page.evaluate_script("typeof up !== 'undefined' && up.network.isBusy()")
+      break unless busy
+      elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start
+      raise Capybara::ExpectationNotMet, "Timed out waiting for Unpoly network to be idle (#{timeout}s)" if elapsed > timeout
+      sleep 0.05
+    end
+  end
+
+  # Fill a form field in a form that uses up-validate.
+  #
+  # The pattern:
+  #   1. Click the target field  → blurs the previous field → up-validate fires
+  #   2. Wait for validate round-trip + re-render to finish
+  #   3. Re-find the field in the refreshed DOM and set the value
+  #
+  # This avoids the race where typing into a field and an up-validate
+  # re-render happen simultaneously (which could wipe out what you typed).
+  def fill_form_field(label, value)
+    find_field(label).click   # focus + trigger blur-validate on previous field
+    wait_for_unpoly_idle      # wait for the validate re-render
+    find_field(label).set(value) # fill the now-stable field
+  end
+
+  # After filling all form fields, call this before clicking submit.
+  #
+  # Without it there is a race: clicking the submit button blurs the last
+  # field which fires up-validate concurrently with the form submission.
+  # If the validate response arrives after the flash is set, it re-renders
+  # the form with an *empty* #flash[up-hungry], wiping out the success toast.
+  #
+  # Pre-blurring via JS drains that validate request before submission.
+  def settle_form
+    page.execute_script("document.activeElement.blur()")
+    wait_for_unpoly_idle
+  end
+
+  # ── Demo helpers ────────────────────────────────────────────────────────────
+
+  # Sleep briefly in DEMO_MODE so a human watching can follow along.
+  def demo_pause(seconds = 0.8)
+    sleep seconds if ENV["DEMO_MODE"]
+  end
+
+  # ── Overlay convenience helpers ─────────────────────────────────────────────
+
+  def within_modal(&block)
+    within("up-modal-box", &block)
+  end
+
+  def within_drawer(&block)
+    within("up-drawer-box", &block)
+  end
 end

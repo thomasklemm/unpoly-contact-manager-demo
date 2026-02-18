@@ -7,6 +7,7 @@ class ContactsController < ApplicationController
   end
 
   def show
+    @contacts = filtered_contacts
   end
 
   def new

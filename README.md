@@ -18,7 +18,7 @@ The first request may take 1–2 seconds. The app runs on Fly.io with `auto_stop
 | Resource | Spec | Cost |
 |---|---|---|
 | Machine | 2 shared vCPUs, 512 MB RAM | Pay-per-second while running (~$5–7/month at full uptime) |
-| Volume | 3 GB SQLite database | $0.45/month (fixed) |
+| Volume | 1 GB SQLite database | $0.15/month (fixed) |
 
 The machine is only billed while actively handling requests. In suspend mode, a low-traffic demo runs a small fraction of the month, so the machine cost is well under the full-uptime figure. The volume is the only fixed charge.
 

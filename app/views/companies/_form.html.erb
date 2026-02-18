@@ -26,8 +26,10 @@
   </div>
 
   <div class="flex justify-end gap-3 pt-3 border-t border-gray-100">
-    <button type="button" class="px-4 py-2 text-sm text-gray-500 font-medium rounded-lg hover:bg-gray-50 transition-colors"
-            up-dismiss="">Cancel</button>
+    <% if up.layer.overlay? %>
+      <button type="button" class="px-4 py-2 text-sm text-gray-500 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+              up-dismiss="">Cancel</button>
+    <% end %>
     <%= f.submit company.new_record? ? "Create Company" : "Save",
           class: "px-5 py-2 text-sm font-medium text-white bg-accent rounded-lg hover:bg-accent-dark cursor-pointer transition-colors shadow-sm" %>
   </div>

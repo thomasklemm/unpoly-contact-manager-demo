@@ -392,11 +392,18 @@ Unpoly's full documentation into your AI coding sessions:
 Install from [thomasklemm/unpoly-skills](https://github.com/thomasklemm/unpoly-skills):
 
 ```bash
-git clone https://github.com/thomasklemm/unpoly-skills /tmp/unpoly-skills
-mkdir -p .claude/skills
-cp -r /tmp/unpoly-skills/unpoly       .claude/skills/
-cp -r /tmp/unpoly-skills/unpoly-rails .claude/skills/
+# Install both skills (the wizard will ask which you want)
+npx skills add thomasklemm/unpoly-skills
+
+# Or install them individually
+npx skills add thomasklemm/unpoly-skills --skill unpoly
+npx skills add thomasklemm/unpoly-skills --skill unpoly-rails
+
+# Or install globally for all projects
+npx skills add thomasklemm/unpoly-skills --global
 ```
+
+Works with Claude Code, Cursor, OpenAI Codex, Amp, and [35+ more agents](https://github.com/vercel-labs/skills#supported-agents).
 
 Then use them in Claude Code:
 

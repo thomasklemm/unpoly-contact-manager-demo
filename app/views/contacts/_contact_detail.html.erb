@@ -79,6 +79,15 @@
 
   <%# Contact info card %>
   <div class="bg-surface-raised rounded-xl border border-gray-200/60 p-5 mb-6 space-y-3.5 shadow-sm">
+    <% if contact.email.blank? && contact.phone.blank? && contact.company&.website.blank? %>
+      <p class="text-sm text-gray-400 text-center py-1">
+        No contact details yet —
+        <%= link_to "add some", edit_contact_path(contact),
+              "data-overlay-link" => "",
+              "up-on-accepted" => "up.reload('#contact-detail'); reloadContactsListPreservingScroll()",
+              class: "text-accent hover:underline" %>
+      </p>
+    <% end %>
     <% if contact.email.present? %>
       <div class="flex items-center gap-3">
         <div class="w-8 h-8 rounded-lg bg-surface-muted flex items-center justify-center flex-shrink-0">

@@ -3,6 +3,8 @@
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
+  # Seed on first boot when database is empty (e.g. after mounting a fresh volume)
+  ./bin/rails runner "Contact.count.zero? && system('bin/rails db:seed')"
 fi
 
 exec "${@}"

@@ -54,6 +54,14 @@ up.compiler('.widget', { priority: 10 }, function(element) { })
 // Higher priority runs first (default: 0)
 ```
 
+**Batch mode** — called once with all matching elements in a render pass:
+```js
+up.compiler('.item', { batch: true }, function(elements) {
+  // elements is an Array of all matching elements inserted together
+  initBulkWidget(elements)
+})
+```
+
 ---
 
 ## Destructors (cleanup)
@@ -96,6 +104,15 @@ up.compiler('.widget', function(element) {
 })
 ```
 
+**Async compilers** — async functions are supported; the destructor (if returned) still runs:
+```js
+up.compiler('.widget', async function(element) {
+  let data = await fetch('/api/data').then(r => r.json())
+  element.textContent = data.value
+  return () => cleanup()  // destructor runs even if element is destroyed before fn resolves
+})
+```
+
 **Alternative: `up.destructor()`** — register cleanup inline:
 ```js
 up.compiler('.widget', function(element) {
@@ -135,6 +152,27 @@ up.compiler('.user', function(element, data) {
 up.compiler('.chart', { defaults: { color: 'blue', size: 100 } }, function(element, data) {
   console.log(data.color)  // 'blue' unless overridden
 })
+```
+
+**`up.data(element)`** — read element data from outside a compiler:
+```js
+let data = up.data('.map')
+console.log(data.lat, data.lng)  // merged from [data-*] and [up-data]
+```
+
+Data is merged from (in order): `element.dataset` (`data-*` attributes), then `[up-data]` JSON.
+
+**`up.on()` data argument** — event listeners receive data as the third argument:
+```js
+up.on('click', '.user', function(event, element, data) {
+  console.log(data.name)  // works like the compiler's second argument
+})
+```
+
+**Override data at render time:**
+```js
+up.reload('.chart', { data: { color: 'blue' } })      // override [up-data] for this reload
+up.reload('.chart', { keepData: true })                // preserve current [up-data] through reload
 ```
 
 ---
@@ -210,6 +248,29 @@ up.compiler('a.lightbox', function(element) {
   // No cleanup needed if lightboxify cleans itself up
 })
 ```
+
+---
+
+## Auto-destroying elements with animation
+
+`up.util.timer()` is a cancelable wrapper around `setTimeout` that integrates with Unpoly's
+lifecycle. `up.destroy()` removes an element from the DOM with an optional animation.
+
+A common use case is auto-dismissing flash messages after a short delay:
+
+```js
+up.compiler('.alert', function(alert) {
+  // Remove the alert after 4 seconds with an upward-slide animation
+  up.util.timer(4000, () => up.destroy(alert, { animation: 'move-to-top' }))
+})
+```
+
+The timer is automatically cancelled if the `.alert` element is removed before it fires
+(e.g. the user manually dismisses it or a fragment update removes it), preventing errors
+from trying to animate an element that no longer exists.
+
+Built-in animations for `up.destroy()`: `'fade-out'`, `'move-to-top'`, `'move-to-bottom'`,
+`'move-to-left'`, `'move-to-right'`.
 
 ---
 
@@ -340,3 +401,35 @@ if (window.CapybaraLockstep) {
 
 The compiler returns the `up.on` unbind function as its destructor, so the listener is
 automatically removed when the element is removed from the DOM.
+
+---
+
+## Asset tracking
+
+Unpoly can detect when the server has deployed new frontend assets and prompt users to reload.
+Mark assets in `<head>` with `[up-asset]`:
+
+```html
+<head>
+  <link rel="stylesheet" href="/app.css" up-asset>
+  <script src="/app.js" up-asset></script>
+</head>
+```
+
+Unpoly compares `[up-asset]` elements in each response against those loaded on the current page.
+When new assets are found, `up:assets:changed` fires — use it to prompt a page reload:
+
+```js
+up.on('up:assets:changed', function(event) {
+  up.reload()          // silent reload
+  // or notify user:
+  // if (confirm('New version available. Reload?')) up.reload()
+})
+```
+
+**Configure:**
+```js
+// Selectors for tracked assets (defaults shown):
+up.script.config.assetSelectors = ['link[rel=stylesheet]', 'script[src]', '[up-asset]']
+up.script.config.noAssetSelectors = ['[up-asset=false]']  // exceptions
+```

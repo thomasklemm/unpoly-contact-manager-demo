@@ -125,7 +125,45 @@ Override with `[up-layer]`:
 <a href="/items" up-layer="parent" up-target=".item-list">Refresh list</a>
 ```
 
-Layer values: `'current'`, `'root'`, `'parent'`, `'closest'`, `'new'`, overlay mode name, or a number (0 = root).
+Layer values: `'current'`, `'root'`, `'parent'`, `'closest'`, `'origin'`, `'front'`, `'new'`, `'swap'`, `'shatter'`, overlay mode name, or a number (0 = root).
+
+**`[up-layer="shatter"]`** — dismiss all overlays, then open from root:
+```html
+<a href="/home" up-layer="shatter">Start over</a>
+```
+
+**`[up-layer="swap"]`** — replace the current overlay with a new one instead of stacking:
+
+```html
+<!-- In a project overlay: navigate to the company overlay, replacing this one -->
+<a href="/companies/1" up-layer="swap">View company</a>
+```
+
+Useful for "lateral" navigation within an overlay context — the user drills into a related record
+without adding an extra layer to the stack. Combined with `[up-dismiss-location]` to auto-close
+when the user navigates back to an index:
+
+```html
+<a href="/companies/1"
+   up-layer="swap"
+   up-dismiss-location="/projects">
+  View company
+</a>
+```
+
+**`[up-dismiss-location]`** — dismiss the overlay when navigation inside it reaches a URL pattern:
+
+```html
+<!-- Overlay auto-dismisses when the user navigates to /companies -->
+<a href="/companies/new"
+   up-layer="new modal"
+   up-dismiss-location="/companies">
+  New company
+</a>
+```
+
+Unlike `[up-accept-location]`, `[up-dismiss-location]` dismisses the layer (no accepted value),
+which triggers `[up-on-dismissed]` on the opener.
 
 **`[up-peel]`** — close overlays above the target layer before updating:
 ```html
@@ -173,7 +211,7 @@ When opening an overlay, define when it should automatically close:
 
 | Attribute | Description |
 |-----------|-------------|
-| `[up-accept-location]` | URL pattern that closes and accepts the overlay |
+| `[up-accept-location]` | URL pattern that closes and accepts the overlay (`$id` and `:id` captures become `value`) |
 | `[up-dismiss-location]` | URL pattern that closes and dismisses the overlay |
 | `[up-accept-event]` | Event name that closes and accepts the overlay (with event payload as value) |
 | `[up-dismiss-event]` | Event name that closes and dismisses the overlay |
@@ -181,6 +219,17 @@ When opening an overlay, define when it should automatically close:
 | `[up-on-dismissed]` | JS to run when overlay is dismissed |
 
 **Location-based acceptance (navigation flow):**
+
+The `:id` and `$id` wildcards both capture a URL segment and pass it as `value.id` in
+`[up-on-accepted]`. `$id` is handy when using Rails route helpers to generate the pattern:
+
+```erb
+<%# Rails: $id works with route helpers — company_path('$id') → '/companies/$id' %>
+<%= link_to 'New company', new_company_path,
+  'up-layer': 'new',
+  'up-accept-location': company_path('$id'),
+  'up-on-accepted': "up.reload('#companies')" %>
+```
 
 ```html
 <!-- Reload the opener layer's main target -->
@@ -339,21 +388,54 @@ Context is preserved across fragment updates within that layer.
 up.layer.current         // up.Layer object
 up.layer.current.mode    // 'root', 'modal', 'drawer', etc.
 up.layer.current.element // The layer's container element
+up.layer.current.location // Current layer URL
+up.layer.current.context // Layer context object
+up.layer.current.parent  // Parent layer reference
 
 // Layer stack
 up.layer.count           // number of open layers
 up.layer.root            // root layer
 up.layer.front           // topmost layer
+up.layer.overlays        // array of all overlay layers
 up.layer.get(0)          // layer by index (0 = root)
+up.layer.get('front')    // by reference string
 
 // Iterate layers
 for (let layer of up.layer.stack) { }
 
 // Check if a layer is open
 up.layer.isOverlay()     // true if current is not root
+up.layer.isRoot()        // true if current is root
+up.layer.isFront()       // true if current is topmost
+
+// Dismiss all overlays at once
+up.layer.dismissOverlays()
+
+// Append element to current layer
+up.layer.affix('.flash', { text: 'Hello' })
+
+// Containment check
+up.layer.contains(element)
 
 // Targeting
 up.render({ url: '/menu', layer: 'root' })
+```
+
+**Config:**
+```js
+up.layer.config.mode = 'modal'          // default overlay mode
+up.layer.config.foreignOverlaySelectors = ['dialog']  // non-Unpoly overlays to ignore
+
+// Per-mode visual config (all inherit from config.overlay):
+up.layer.config.overlay.openAnimation    // default open animation
+up.layer.config.overlay.closeAnimation   // default close animation
+up.layer.config.overlay.history          // whether overlay updates history
+up.layer.config.overlay.trapFocus        // trap keyboard focus in overlay
+up.layer.config.modal.backdrop = true    // modal has a backdrop
+up.layer.config.modal.size = 'medium'    // overlay size: 'small', 'medium', 'large', 'grow', 'full'
+up.layer.config.drawer.position = 'left' // drawer position: 'left' or 'right'
+up.layer.config.popup.align = 'left'     // popup alignment: 'left' or 'right'
+up.layer.config.popup.trapFocus = false  // popups don't trap focus by default
 ```
 
 ---

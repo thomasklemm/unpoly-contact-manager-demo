@@ -108,18 +108,56 @@ end
 <input name="email" up-validate=".email-group">
 ```
 
+**Additional `[up-validate]` attributes:**
+
+| Attribute | Description |
+|-----------|-------------|
+| `[up-validate-url]` | Override form `[action]` for validation requests |
+| `[up-validate-method]` | Override form `[method]` for validation requests |
+| `[up-validate-batch]` | Enable/disable batching (default: `true`) |
+| `[up-validate-params]` | Additional params (relaxed JSON) |
+| `[up-validate-headers]` | Additional headers (relaxed JSON) |
+
+Multiple `up.validate()` calls within the same JS task are batched into a single request.
+The server receives the combined `X-Up-Validate` header with all field names.
+
 **Validate multiple fields together:**
 ```html
 <input name="password" up-validate=".password-group">
 <input name="password_confirmation" up-validate=".password-group">
 ```
 
-**Mark explicit form groups with `[up-form-group]`:**
+**Configure custom form group selectors via `up.form.config.groupSelectors`:**
 
 Unpoly looks for a "form group" element around the validated field — an ancestor element that
 acts as the unit of replacement. By default Unpoly recognizes `<fieldset>`, `<label>`, and the
-`<form>` itself (configured via `up.form.config.groupSelectors`). Use `[up-form-group]` to mark
-a container explicitly as the form group:
+`<form>` itself. Register custom wrappers (e.g. Bootstrap's `.form-group`) with:
+
+```js
+// Add .form-group as a recognized form group boundary
+up.form.config.groupSelectors.unshift('.form-group')
+```
+
+Use `.unshift()` to give your selector higher priority than the built-in ones.
+
+**Suppress error flash during in-flight validation with `.up-active`**
+
+When `[up-validate]` fires, Unpoly adds `.up-active` to the form while the request is in flight.
+Use this to hide error styles until the new validation response arrives, preventing the old
+error state from flashing before the fresh response replaces it:
+
+```css
+/* Show Rails error styles only when no validation request is in flight */
+.field_with_errors:not(form.up-active *) label { color: red; }
+.field_with_errors:not(form.up-active *) input { border-color: red; }
+
+/* Same for custom error messages */
+.form-error:not(form.up-active *) { color: red; }
+```
+
+**Mark explicit form groups with `[up-form-group]`:**
+
+Use `[up-form-group]` to mark a container explicitly as the form group:
 
 ```html
 <!-- Table rows as form groups for nested forms -->
@@ -218,16 +256,31 @@ Attach to specific field to submit on that field's change only:
 | `[up-watch-delay]` | Debounce delay in ms before submitting (default 0) |
 | `[up-watch-event]` | DOM event to watch (default `'input'` for text, `'change'` for others) |
 | `[up-watch-disable]` | Disable fields while reloading (`true`, `false`, or CSS selector) |
-| `[up-watch-feedback]` | Show loading state while reloading |
+| `[up-watch-feedback]` | Show `.up-active`/`.up-loading` CSS classes while reloading (boolean) |
+| `[up-watch-preview]` | Named preview to show while reloading (e.g. `"spinner"`) |
+| `[up-watch-placeholder]` | Template selector to show as placeholder while reloading |
+
+**Scope:** All `[up-watch-*]` attributes can be placed on a form, fieldset, or individual input.
+The nearest matching ancestor wins, so field-level attributes override form-level defaults.
 
 ```html
 <!-- Only submit 300ms after the user stops typing -->
 <input name="search" up-autosubmit up-watch-delay="300" up-target=".results">
+
+<!-- Disable form and show spinner preview while reloading dependent fields -->
+<form up-watch up-watch-disable up-watch-preview="spinner">
 ```
 
 From JS:
 ```js
 up.watch('input[name=search]', { delay: 300, event: 'input' }, handler)
+```
+
+**Global config:**
+```js
+up.form.config.watchInputDelay    // default debounce delay for input events (default: 0)
+up.form.config.watchInputEvents   // events that count as 'input' (default: ['input', 'change'])
+up.form.config.watchChangeEvents  // events that count as 'change' (default: ['change'])
 ```
 
 ---
@@ -258,6 +311,11 @@ This is for **client-side** light effects — use `[up-watch]` for server-render
 
 <input class="role-dependent" name="department" up-enable-for="manager">
 <input class="role-dependent" name="mentor" up-disable-for="manager">
+```
+
+**`[up-switch-region]`** — limit where Unpoly looks for dependent elements (default: `'form'`):
+```html
+<select name="tier" up-switch=".tier-dependent" up-switch-region=".pricing-section">
 ```
 
 **Special values:**
@@ -294,6 +352,30 @@ up.submit(form, { disable: true })
 Configure default disable behavior:
 ```js
 up.form.config.submitButtons = 'button[type=submit], input[type=submit]'
+```
+
+---
+
+## Form utility functions
+
+```js
+up.form.fields(root)          // All form fields within an element
+up.form.submitButtons(root)   // All submit buttons within an element
+up.form.isField(element)      // Is this element a form field?
+up.form.isSubmittable(form)   // Will this form be submitted via Unpoly?
+up.form.group(element)        // Nearest form group around an element
+up.form.disableTemp(container) // Disable all fields/buttons; returns re-enable function
+```
+
+**External fields** (with `[form="form-id"]` attribute outside the `<form>` element) are
+included in `up.form.fields()` and submitted as part of the form.
+
+**Form config:**
+```js
+up.form.config.groupSelectors      // ['[up-form-group]', 'fieldset', 'label', 'form']
+up.form.config.fieldSelectors      // What counts as a form field
+up.form.config.watchInputDelay     // Default debounce for 'input' event (default: 0)
+up.form.config.validateBatch       // Consolidate multiple validates into one request (default: true)
 ```
 
 ---

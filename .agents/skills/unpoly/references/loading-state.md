@@ -21,6 +21,23 @@ When Unpoly is loading, it automatically adds CSS classes to elements:
 | `.up-loading` | Added to the fragment being updated |
 | `[aria-busy]` | Added to the fragment being updated |
 | `up-progress-bar` | Global progress bar element (custom element) |
+| `.up-focus-visible` | Focused element needs visible focus ring (keyboard nav) |
+| `.up-focus-hidden` | Focused element should not show ring (pointer interaction) |
+| `.up-scrollbar-away` | Added to `<body>` and right-anchored elements when a scrolling overlay opens |
+
+**Scrollbar compensation:**
+```css
+/* Compensate for scrollbar-width when overlay opens */
+.chat.up-scrollbar-away {
+  right: calc(20px + var(--up-scrollbar-width)) !important;
+}
+```
+
+Configure loading class names:
+```js
+up.status.config.activeClasses   // default: ['up-active']
+up.status.config.loadingClasses  // default: ['up-loading']
+```
 
 **Style loading state:**
 ```css
@@ -69,6 +86,53 @@ Show a placeholder element while a fragment loads:
 <div class="content">Current content</div>
 ```
 
+**Pattern: reusable skeleton screens in `<template>` elements**
+
+Define skeleton screens once as named `<template>` elements and reference them by ID in
+`[up-placeholder]`. Only inject the templates on the initial full-page load — on Unpoly
+fragment updates the `<template>` elements already exist in the DOM from the initial load
+and don't need to be re-sent:
+
+```erb
+<%# Only render template elements on full-page loads — Unpoly requests don't need them %>
+<%= render 'placeholders/templates' unless up? %>
+```
+
+```erb
+<%# placeholders/_templates.erb %>
+<template id="table-placeholder">
+  <%= render 'placeholders/table_skeleton' %>
+</template>
+
+<template id="form-placeholder">
+  <%= render 'placeholders/form_skeleton' %>
+</template>
+```
+
+Reference by ID and optionally pass data to a compiler that adjusts the skeleton:
+
+```erb
+<%# Show a 5-row skeleton table while the list loads %>
+<%= link_to 'Companies', companies_path,
+  'up-follow': true,
+  'up-placeholder': '#table-placeholder { rows: 5 }' %>
+
+<%# up.reload with placeholder — used after accepting an overlay %>
+'up-on-accepted': "up.reload('#companies', { placeholder: '#table-placeholder { rows: 5 }' })"
+```
+
+The `{ rows: 5 }` part is parsed as `[up-data]` on the cloned placeholder element and passed
+to a compiler as the `data` argument:
+
+```js
+// Trim skeleton rows to the expected count
+up.compiler('.skeleton-table', function(element, { rows = 10 }) {
+  let trs = element.querySelectorAll('tr')
+  // Remove excess rows so the skeleton matches the expected result set size
+  Array.from(trs).slice(rows).forEach(tr => tr.remove())
+})
+```
+
 ---
 
 ## Previews (arbitrary loading state)
@@ -83,11 +147,13 @@ then revert them when the response arrives:
 </a>
 ```
 
-**Register a named preview:**
+**Register a named preview (with optional params):**
 ```js
-up.preview('show-spinner', function(preview) {
+up.preview('show-spinner', function(preview, params) {
   // preview.fragment is the element being updated
-  preview.insert(preview.fragment, 'afterbegin', '<div class="spinner">Loading…</div>')
+  // params are the inline options from [up-preview="show-spinner { size: 20 }"]
+  let size = params.size || 24
+  preview.insert(preview.fragment, 'afterbegin', `<div class="spinner" style="--size:${size}px">…</div>`)
   // Changes are automatically reverted when response arrives
 })
 ```
@@ -110,23 +176,115 @@ up.compiler('.load-btn', function(button) {
 
 **`up.Preview` API:**
 ```js
-up.preview('my-preview', function(preview) {
+up.preview('my-preview', function(preview, params) {
+  // Properties:
   preview.fragment               // element being updated
   preview.origin                 // element that triggered the update
+  preview.params                 // form params (up.Params) from the pending request
+  preview.request                // the up.Request object
+  preview.renderOptions          // mutable render options for this pass
+  preview.layer                  // layer being updated ('new' when opening overlay)
+  preview.revalidating           // true if this is a cache revalidation
+  preview.ended                  // true if preview has ended (only in async fns)
+  preview.expiredResponse        // up.Response when revalidating; undefined otherwise
 
   // All changes are reverted automatically:
-  preview.addClass(element, 'loading')
+  preview.addClass(element, 'loading')      // element optional (defaults to fragment)
   preview.removeClass(element, 'loaded')
+  preview.setAttrs(element, { 'aria-busy': true })
   preview.setStyle(element, { opacity: 0.5 })
   preview.insert(element, 'beforeend', '<p>Loading…</p>')
+  preview.swapContent(element, '<span class="spinner"></span>')
+  preview.show(element)          // temporarily show hidden element
+  preview.hide(element)          // hide element, restore on response
+  preview.hideContent(element)   // temporarily hide all children
   preview.disable(formElement)
   preview.showPlaceholder(element, '<div class="skeleton">…</div>')
+
+  // Open a temporary overlay (dismissed when preview ends):
+  preview.openLayer('<div>Loading...</div>', { mode: 'modal' })
+
+  // Run another preview by name or function:
+  preview.run('spinner', { size: 20 })
+
+  // Register cleanup manually:
+  preview.undo(() => cleanupSomething())
 
   // Or return a cleanup function:
   let timer = setInterval(() => { }, 1000)
   return () => clearInterval(timer)
 })
 ```
+
+**Composed previews** — apply multiple named previews with a comma-separated string:
+
+```html
+<a href="/tasks/clear" up-preview="btn-spinner, clear-tasks">Clear done</a>
+```
+
+Useful for combining a generic "show spinner on button" preview with a domain-specific
+optimistic update. Both previews run independently and are both reverted when the response arrives.
+
+In Rails/ERB you can select the preview dynamically:
+
+```erb
+<% preview = task.new_record? ? 'add-task, btn-spinner' : 'btn-spinner' %>
+<%= form_for task, html: { 'up-preview': preview } do |form| %>
+```
+
+**Pattern: button spinner that preserves layout dimensions**
+
+When swapping button text for a spinner, lock the button's size first with `preview.setStyle()`
+to prevent layout shift:
+
+```js
+up.preview('btn-spinner', function(preview) {
+  let button = preview.origin.matches('.btn')
+    ? preview.origin
+    : preview.origin.closest('form')?.querySelector('button[type=submit]')
+
+  if (!button) return
+
+  // Lock dimensions so the layout doesn't shift when content is replaced
+  preview.setStyle(button, {
+    height: button.offsetHeight + 'px',
+    width: button.offsetWidth + 'px'
+  })
+  preview.swapContent(button, '<span class="spinner"></span>')
+})
+```
+
+**Pattern: dim and greyscale content behind a loading spinner using CSS `:has()`**
+
+Insert a spinner at the top of the main area; CSS `:has()` automatically dims everything else:
+
+```js
+up.preview('main-spinner', function(preview) {
+  // Find the :main ancestor of the fragment being updated
+  let main = up.fragment.closest(preview.fragment, ':main')
+  preview.insert(main, 'afterbegin', '<div class="main-spinner"></div>')
+})
+```
+
+```css
+.main-spinner {
+  /* your spinner styles */
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Dim siblings via :has() — no JS needed */
+main:has(.main-spinner) {
+  position: relative;
+}
+main:has(.main-spinner) > *:not(.main-spinner) {
+  transition: opacity 0.3s ease-out, filter 0.3s ease-out;
+  opacity: 0.4;
+  filter: grayscale(100%);
+}
+```
+
+The spinner and all style changes are reverted automatically when the response arrives.
 
 ---
 
@@ -206,12 +364,25 @@ up-progress-bar {
 
 **Configure:**
 ```js
-up.network.config.badResponseTime = 400  // ms before showing (default 400)
+up.network.config.lateDelay = 400  // ms before showing progress bar (default 400)
 ```
 
 **Disable:**
 ```js
 up.network.config.progressBar = false
+```
+
+**Tip: Increase `lateDelay` when all interactions have immediate preview feedback**
+
+When every link and form already shows an immediate spinner or optimistic update via
+`[up-preview]`, the global progress bar is redundant for normal connections and only
+needed as a last-resort indicator for very slow responses. Raising `lateDelay` avoids
+the progress bar flickering for fast-but-not-instant responses:
+
+```js
+// Only show the progress bar for responses taking more than 1.25 seconds.
+// Previews/spinners already give immediate feedback for normal latency.
+up.network.config.lateDelay = 1250
 ```
 
 ---
@@ -236,20 +407,23 @@ up.on('up:network:recover', function(event) {
 
 **Configure:**
 ```js
-up.network.config.badResponseTime = 400     // ms before showing progress bar
+up.network.config.lateDelay = 400           // ms before showing progress bar
 up.network.config.cacheEvictAge = 90 * 60 * 1000  // 90 min offline cache
 ```
 
-**`[up-offline-feedback]`** on flash/notification elements to show only when offline:
-```html
-<div class="offline-banner" up-hide-for=":online">You are offline</div>
-```
-
-**Retry failed requests:**
+**`up:fragment:offline`** — emitted on the fragment when a network failure occurs during render:
 ```js
-up.on('up:fragment:aborted', function(event) {
-  if (confirm('Request failed. Retry?')) {
-    event.request.load()
+up.on('up:fragment:offline', function(event) {
+  // event.request — the failed request
+  // event.retry() — re-run the same render options
+  if (confirm('Connection lost. Retry?')) {
+    event.retry()
   }
 })
 ```
+
+**`up:request:offline`** — lower-level event on specific failed requests:
+```js
+up.on('up:request:offline', function(event) {
+  showOfflineBanner()
+})

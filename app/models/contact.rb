@@ -6,9 +6,6 @@ class Contact < ApplicationRecord
 
   validates :first_name, presence: true
   validates :last_name, presence: true
-  validates :email, presence: true,
-                    format: { with: URI::MailTo::EMAIL_REGEXP, message: "is not a valid email", allow_blank: true },
-                    uniqueness: { case_sensitive: false, allow_blank: true }
 
   scope :active, -> { where(archived_at: nil) }
   scope :starred, -> { where(starred: true, archived_at: nil) }

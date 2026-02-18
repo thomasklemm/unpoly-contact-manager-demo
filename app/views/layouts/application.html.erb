@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html>
   <script>
-    // Apply saved theme before paint to prevent flash
-    if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+    // Apply saved theme before paint to prevent flash.
+    // Defaults to 'system' (follows prefers-color-scheme) when no preference stored.
+    (function() {
+      var t = localStorage.getItem('theme') || 'system';
+      if (t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
   </script>
   <head>
     <title><%= content_for(:title) || "Contacts" %></title>
@@ -309,29 +315,27 @@
       html.dark .overlay-style-option { border-color: #3a4050; color: #9ca3af; }
       html.dark .overlay-style-option:hover { border-color: #d4976a; color: #d4976a; }
       html.dark .overlay-style-option.active { border-color: #d4976a; color: #d4976a; background: rgba(212,151,106,0.15); }
-      /* Theme toggle row in settings panel */
-      .settings-theme-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.5rem 0.75rem;
-        border-radius: 0.75rem;
-        border: 1px solid #e5e7eb;
-        cursor: pointer;
+      /* Theme style option boxes (same visual style as overlay-style-option) */
+      .theme-style-option {
+        border: 2px solid #e5e7eb;
+        color: #6b7280;
         transition: all 0.15s ease;
+        cursor: pointer;
         background: transparent;
-        width: 100%;
-        text-align: left;
       }
-      .settings-theme-row:hover { background: rgba(0,0,0,0.03); }
-      html.dark .settings-theme-row { border-color: #3a4050; }
-      html.dark .settings-theme-row:hover { background: rgba(255,255,255,0.04); }
-      html.dark .settings-theme-label { color: #e5e7eb; }
-      /* Show moon by default (light mode), sun in dark mode */
-      .settings-theme-row .moon-icon { display: block; }
-      .settings-theme-row .sun-icon  { display: none; }
-      html.dark .settings-theme-row .moon-icon { display: none; }
-      html.dark .settings-theme-row .sun-icon  { display: block; }
+      .theme-style-option:hover {
+        border-color: #d4976a;
+        color: #d4976a;
+        background: rgba(212, 151, 106, 0.05);
+      }
+      .theme-style-option.active {
+        border-color: #d4976a;
+        color: #d4976a;
+        background: rgba(212, 151, 106, 0.1);
+      }
+      html.dark .theme-style-option { border-color: #3a4050; color: #9ca3af; }
+      html.dark .theme-style-option:hover { border-color: #d4976a; color: #d4976a; }
+      html.dark .theme-style-option.active { border-color: #d4976a; color: #d4976a; background: rgba(212,151,106,0.15); }
     </style>
   </head>
 
@@ -395,18 +399,27 @@
         </div>
       </div>
 
-      <%# Theme toggle %>
+      <%# Theme selector: Light / Dark / System %>
       <div>
-        <p class="settings-section-label text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-3">Appearance</p>
-        <button type="button"
-                class="settings-theme-row"
-                onclick="toggleTheme()">
-          <span class="settings-theme-label text-sm text-gray-700">Dark mode</span>
-          <span class="text-gray-400">
-            <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-            <svg class="moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-          </span>
-        </button>
+        <p class="settings-section-label text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1">Appearance</p>
+        <p class="settings-section-hint text-xs text-gray-400 mb-3">Color theme preference</p>
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" data-theme="light" onclick="selectTheme('light')"
+                  class="theme-style-option rounded-xl p-2.5 flex flex-col items-center gap-1.5">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <span class="text-[10px] font-medium">Light</span>
+          </button>
+          <button type="button" data-theme="dark" onclick="selectTheme('dark')"
+                  class="theme-style-option rounded-xl p-2.5 flex flex-col items-center gap-1.5">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <span class="text-[10px] font-medium">Dark</span>
+          </button>
+          <button type="button" data-theme="system" onclick="selectTheme('system')"
+                  class="theme-style-option rounded-xl p-2.5 flex flex-col items-center gap-1.5">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span class="text-[10px] font-medium">System</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -423,26 +436,59 @@
           if (panel) panel.classList.add('hidden');
         }
       });
-      // Select overlay style
+
+      // Overlay style selector
       window.selectOverlayStyle = function(style) {
         localStorage.setItem('overlayStyle', style);
         document.querySelectorAll('[data-overlay-link]').forEach(function(el) {
           el.setAttribute('up-layer', 'new ' + style);
+          if (style === 'drawer') {
+            el.setAttribute('up-size', 'grow');
+            el.setAttribute('up-position', 'right');
+          } else {
+            el.removeAttribute('up-size');
+            el.removeAttribute('up-position');
+          }
         });
         document.querySelectorAll('.overlay-style-option').forEach(function(btn) {
           btn.classList.toggle('active', btn.dataset.overlayStyle === style);
         });
       };
-      // Initialize overlay style buttons on page load
-      document.addEventListener('DOMContentLoaded', function() {
-        var style = localStorage.getItem('overlayStyle') || 'modal';
-        selectOverlayStyle(style);
-      });
-      // Theme toggle
-      window.toggleTheme = function() {
-        document.documentElement.classList.toggle('dark');
-        localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+
+      // Theme: light / dark / system
+      function applyTheme(theme) {
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else if (theme === 'light') {
+          document.documentElement.classList.remove('dark');
+        } else {
+          // system
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        }
+      }
+      window.selectTheme = function(theme) {
+        localStorage.setItem('theme', theme);
+        applyTheme(theme);
+        document.querySelectorAll('.theme-style-option').forEach(function(btn) {
+          btn.classList.toggle('active', btn.dataset.theme === theme);
+        });
       };
+      // Follow system preference changes when theme is 'system'
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+        if ((localStorage.getItem('theme') || 'system') === 'system') {
+          applyTheme('system');
+        }
+      });
+
+      // Initialize settings buttons on page load
+      document.addEventListener('DOMContentLoaded', function() {
+        selectOverlayStyle(localStorage.getItem('overlayStyle') || 'modal');
+        selectTheme(localStorage.getItem('theme') || 'system');
+      });
     </script>
   </body>
 </html>

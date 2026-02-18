@@ -11,14 +11,14 @@ up.form.config.submitSelectors.push('form')
 up.preview('toggle-star', function(preview) {
   let indicator = preview.fragment
   let wasStarred = indicator.classList.contains('starred')
-  preview.addClassTemporarily(indicator, wasStarred ? 'unstarred' : 'starred')
-  preview.removeClassTemporarily(indicator, wasStarred ? 'starred' : 'unstarred')
+  preview.addClass(indicator, wasStarred ? 'unstarred' : 'starred')
+  preview.removeClass(indicator, wasStarred ? 'starred' : 'unstarred')
 })
 
 // Optimistic archive: fade out the contact row immediately
 up.preview('archive-contact', function(preview) {
   let row = preview.origin.closest('.contact-row')
-  if (row) preview.setStyleTemporarily(row, { opacity: '0.3', pointerEvents: 'none' })
+  if (row) preview.setStyle(row, { opacity: '0.3', pointerEvents: 'none' })
 })
 
 // Keep the search form's hidden filter field in sync with the current filter.

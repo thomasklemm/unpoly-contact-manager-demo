@@ -61,7 +61,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   # ── Demo helpers ────────────────────────────────────────────────────────────
 
   # Sleep briefly in DEMO_MODE so a human watching can follow along.
-  def demo_pause(seconds = 0.8)
+  def demo_pause(seconds = 1.2)
     sleep seconds if ENV["DEMO_MODE"]
   end
 

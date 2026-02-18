@@ -81,12 +81,12 @@ class ContactsTest < ApplicationSystemTestCase
     within "#contacts-sidebar" do
       click_link @alice.full_name
     end
-    demo_pause(0.5)
+    demo_pause(0.8)
 
     within "#contacts-sidebar" do
       click_link @bob.full_name
     end
-    demo_pause(0.5)
+    demo_pause(0.8)
 
     within "#contact-detail" do
       assert_text @bob.full_name
@@ -268,7 +268,7 @@ class ContactsTest < ApplicationSystemTestCase
       fill_form_field "Last name",  "Newby"
       fill_form_field "Email",      "zara.newby@example.com"
       fill_form_field "Phone",      "+1-555-9999"
-      demo_pause(0.5)
+      demo_pause(0.8)
       settle_form
       click_button "Create Contact"
     end
@@ -375,18 +375,18 @@ class ContactsTest < ApplicationSystemTestCase
     within "#contacts-sidebar" do
       click_link @alice.full_name
     end
-    demo_pause(0.3)
+    demo_pause(0.8)
 
     within "#contact-detail" do
       click_link "Edit"
     end
 
     assert_selector "up-modal-box"
-    demo_pause(0.3)
+    demo_pause(0.8)
 
     within_modal do
       fill_form_field "First name", "Alicia"
-      demo_pause(0.3)
+      demo_pause(0.8)
       click_button "Save Changes"
     end
 
@@ -454,7 +454,7 @@ class ContactsTest < ApplicationSystemTestCase
     visit root_path
     click_link "New"
     assert_selector "up-modal-box"
-    demo_pause(0.5)
+    demo_pause(0.8)
 
     within_modal do
       fill_form_field "First name", "Nested"
@@ -466,7 +466,7 @@ class ContactsTest < ApplicationSystemTestCase
     within_modal do
       click_link "+ New company"
     end
-    demo_pause(0.5)
+    demo_pause(0.8)
 
     # Wait for the nested company modal to open (minimum: 2 waits until
     # at least two up-modal-box elements exist, then picks the last one).
@@ -474,11 +474,11 @@ class ContactsTest < ApplicationSystemTestCase
     within nested_modals.last do
       fill_in "Name",    with: "Nested Corp"
       fill_in "Website", with: "https://nested.example.com"
-      demo_pause(0.3)
+      demo_pause(0.8)
       click_button "Create Company"
     end
 
-    demo_pause(0.5)
+    demo_pause(0.8)
 
     # Inner modal closed; outer contact form still open
     assert_selector "up-modal-box"
@@ -525,11 +525,11 @@ class ContactsTest < ApplicationSystemTestCase
     within "#activities-panel" do
       assert_text "Discussed pricing"
     end
-    demo_pause(0.3)
+    demo_pause(0.8)
 
     within "#activities-panel" do
       find("textarea[name='activity[body]']").set("Follow-up scheduled for next week.")
-      demo_pause(0.3)
+      demo_pause(0.8)
       click_button "Add"
     end
 
@@ -562,12 +562,12 @@ class ContactsTest < ApplicationSystemTestCase
     within "#contacts-sidebar" do
       click_link @bob.full_name   # Bob starts unstarred
     end
-    demo_pause(0.3)
+    demo_pause(0.8)
 
     within "#contact-detail" do
       star_btn = find("button.star-icon.unstarred")
       star_btn.click
-      demo_pause(0.3)
+      demo_pause(0.8)
       assert_selector "button.star-icon.starred"
     end
 
@@ -583,11 +583,11 @@ class ContactsTest < ApplicationSystemTestCase
 
     within "#contact-detail" do
       find("button.star-icon.unstarred").click
-      demo_pause(0.3)
+      demo_pause(0.8)
       assert_selector "button.star-icon.starred"
 
       find("button.star-icon.starred").click
-      demo_pause(0.3)
+      demo_pause(0.8)
       assert_selector "button.star-icon.unstarred"
     end
 
@@ -626,7 +626,7 @@ class ContactsTest < ApplicationSystemTestCase
     within "#contacts-sidebar" do
       click_link @bob.full_name
     end
-    demo_pause(0.3)
+    demo_pause(0.8)
 
     within "#contact-detail" do
       accept_confirm "Archive #{@bob.full_name}?" do
@@ -654,7 +654,7 @@ class ContactsTest < ApplicationSystemTestCase
     within "#contacts-sidebar" do
       click_link @archived.full_name
     end
-    demo_pause(0.3)
+    demo_pause(0.8)
 
     within "#contact-detail" do
       click_button "Unarchive"   # no confirm dialog for unarchive
@@ -702,7 +702,7 @@ class ContactsTest < ApplicationSystemTestCase
     within "#contacts-sidebar" do
       click_link @bob.full_name
     end
-    demo_pause(0.3)
+    demo_pause(0.8)
 
     within "#contact-detail" do
       accept_confirm "Delete #{@bob.full_name}? This cannot be undone." do
@@ -816,7 +816,7 @@ class ContactsTest < ApplicationSystemTestCase
 
     # toggleOverlayStyle() switches from the default 'modal' → 'drawer'
     page.execute_script("toggleOverlayStyle()")
-    demo_pause(0.3)
+    demo_pause(0.8)
 
     click_link "New"
     demo_pause

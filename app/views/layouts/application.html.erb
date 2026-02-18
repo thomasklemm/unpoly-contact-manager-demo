@@ -38,10 +38,10 @@
             },
             colors: {
               sidebar: {
-                DEFAULT: '#1a1d23',
-                light: '#22252d',
-                lighter: '#2a2e37',
-                border: '#32363f',
+                DEFAULT: '#d8d0c5',
+                light: '#e0d9ce',
+                lighter: '#e8e2d8',
+                border: '#c8c0b5',
               },
               accent: {
                 DEFAULT: '#d4976a',
@@ -82,13 +82,13 @@
         min-width: 280px;
         flex-shrink: 0;
         overflow-y: auto;
-        background: #1a1d23;
+        background: #d8d0c5;
         display: flex;
         flex-direction: column;
       }
       #contacts-sidebar::-webkit-scrollbar { width: 4px; }
       #contacts-sidebar::-webkit-scrollbar-track { background: transparent; }
-      #contacts-sidebar::-webkit-scrollbar-thumb { background: #32363f; border-radius: 2px; }
+      #contacts-sidebar::-webkit-scrollbar-thumb { background: #bdb5aa; border-radius: 2px; }
 
       #contacts-list {
         display: flex;
@@ -96,8 +96,8 @@
       }
       #contacts-list::-webkit-scrollbar { width: 4px; }
       #contacts-list::-webkit-scrollbar-track { background: transparent; }
-      #contacts-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
-      #contacts-list::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+      #contacts-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); border-radius: 2px; }
+      #contacts-list::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.28); }
       #contact-detail {
         flex: 1;
         overflow-y: auto;
@@ -113,16 +113,16 @@
         transition: all 0.15s ease;
       }
       .contact-row:hover {
-        background: rgba(255,255,255,0.04);
-        border-left-color: rgba(212, 151, 106, 0.4);
+        background: rgba(0,0,0,0.05);
+        border-left-color: rgba(212, 151, 106, 0.5);
       }
       .contact-row.up-active,
       .contact-row:has(.up-active) {
-        background: rgba(212, 151, 106, 0.08);
+        background: rgba(212, 151, 106, 0.18);
         border-left-color: #d4976a;
       }
       .contact-row.selected {
-        background: rgba(212, 151, 106, 0.1);
+        background: rgba(212, 151, 106, 0.18);
         border-left-color: #d4976a;
       }
 
@@ -206,17 +206,17 @@
 
       /* ---- Sidebar search input ---- */
       .sidebar-search {
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.08);
-        color: #e5e7eb;
+        background: rgba(255,255,255,0.5);
+        border: 1px solid rgba(0,0,0,0.1);
+        color: #374151;
         transition: all 0.2s ease;
       }
       .sidebar-search::placeholder {
-        color: #6b7280;
+        color: #9ca3af;
       }
       .sidebar-search:focus {
-        background: rgba(255,255,255,0.1);
-        border-color: rgba(212, 151, 106, 0.4);
+        background: rgba(255,255,255,0.75);
+        border-color: rgba(212, 151, 106, 0.5);
         outline: none;
         box-shadow: 0 0 0 2px rgba(212, 151, 106, 0.15);
       }
@@ -230,11 +230,11 @@
         color: #fff;
       }
       .filter-pill:not(.active) {
-        color: #9ca3af;
+        color: #6b7280;
       }
       .filter-pill:not(.active):hover {
-        color: #d1d5db;
-        background: rgba(255,255,255,0.06);
+        color: #374151;
+        background: rgba(0,0,0,0.07);
       }
 
       /* ---- Tag picker ---- */
@@ -264,6 +264,22 @@
       }
 
       /* ---- Dark mode ---- */
+      html.dark #contacts-sidebar { background: #1a1d23; }
+      html.dark #contacts-sidebar::-webkit-scrollbar-thumb { background: #32363f; }
+      html.dark #contacts-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); }
+      html.dark #contacts-list::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+      html.dark .contact-row:hover { background: rgba(255,255,255,0.04); }
+      html.dark .contact-row.up-active, html.dark .contact-row:has(.up-active) { background: rgba(212,151,106,0.08); }
+      html.dark .contact-row.selected { background: rgba(212,151,106,0.1); }
+      html.dark .contact-name { color: #e2ddd6 !important; }
+      html.dark .contact-company { color: #6b7280 !important; }
+      html.dark .sidebar-search { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.08); color: #e5e7eb; }
+      html.dark .sidebar-search:focus { background: rgba(255,255,255,0.1); border-color: rgba(212,151,106,0.4); }
+      html.dark .filter-pill:not(.active) { color: #9ca3af; }
+      html.dark .filter-pill:not(.active):hover { color: #d1d5db; background: rgba(255,255,255,0.06); }
+      html.dark .sidebar-title { color: #f3f4f6; }
+      html.dark .sidebar-icon-btn { color: #9ca3af; }
+      html.dark .sidebar-icon-btn:hover { color: #e5e7eb; background: rgba(255,255,255,0.08); }
       html.dark #contact-detail { background: #1e2128; color: #e5e7eb; }
       html.dark .bg-surface-raised, html.dark .bg-white { background: #252830 !important; }
       html.dark .form-input { background: #2a2f38; border-color: #3a4050; color: #e5e7eb; }

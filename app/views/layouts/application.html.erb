@@ -237,6 +237,20 @@
         background: rgba(255,255,255,0.06);
       }
 
+      /* ---- Tag picker ---- */
+      .tag-picker-item .tag-pill {
+        transition: opacity 0.15s ease, box-shadow 0.15s ease;
+      }
+      .tag-picker-item:has(input:not(:checked)) .tag-pill {
+        opacity: 0.28;
+      }
+      .tag-picker-item:has(input:not(:checked)):hover .tag-pill {
+        opacity: 0.6;
+      }
+      .tag-picker-item:has(input:checked) .tag-pill {
+        box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px currentColor;
+      }
+
       /* ---- Form focus ring ---- */
       .form-input:focus {
         outline: none;

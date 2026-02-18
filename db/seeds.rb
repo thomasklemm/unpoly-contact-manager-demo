@@ -27,14 +27,14 @@ puts "  #{companies.size} companies"
 # Tags
 # ---------------------------------------------------------------------------
 tag_data = [
-  { name: "Customer",  color: "#10b981" },
-  { name: "Prospect",  color: "#3b82f6" },
-  { name: "VIP",       color: "#8b5cf6" },
-  { name: "Partner",   color: "#f97316" },
-  { name: "Investor",  color: "#14b8a6" },
-  { name: "Vendor",    color: "#f59e0b" },
-  { name: "Friend",    color: "#ec4899" },
-  { name: "Lead",      color: "#6366f1" }
+  { name: "Customer",  color: "#3e7c59" },
+  { name: "Prospect",  color: "#2d6da3" },
+  { name: "VIP",       color: "#6e4ca6" },
+  { name: "Partner",   color: "#c45c28" },
+  { name: "Investor",  color: "#1e7878" },
+  { name: "Vendor",    color: "#9e7a18" },
+  { name: "Friend",    color: "#b84474" },
+  { name: "Lead",      color: "#4b5196" }
 ]
 
 tags = tag_data.map do |attrs|

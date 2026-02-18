@@ -3,7 +3,7 @@
 > A production-quality Rails contact manager — no React, no JSON API, no build step.
 > Server-rendered HTML all the way. [Unpoly 3](https://unpoly.com) handles the rest.
 
-**[→ Live demo](https://unpoly-contact-manager-demo.fly.dev)**
+**<a href="https://unpoly-contact-manager-demo.fly.dev" target="_blank">→ Live demo</a>**
 
 ![Contact detail view](public/screenshots/02-contact-detail.png)
 

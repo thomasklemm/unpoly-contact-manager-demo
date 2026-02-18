@@ -9,7 +9,9 @@ class ActivitiesController < ApplicationController
   def create
     @activity = @contact.activities.build(activity_params)
     if @activity.save
-      redirect_to contact_activities_path(@contact)
+      @activities = @contact.activities.order(created_at: :desc)
+      @activity = Activity.new
+      render :index
     else
       @activities = @contact.activities.order(created_at: :desc)
       render :index, status: :unprocessable_entity

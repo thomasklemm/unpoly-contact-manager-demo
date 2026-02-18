@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_17_210941) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_18_074029) do
   create_table "activities", force: :cascade do |t|
     t.text "body", null: false
     t.integer "contact_id", null: false
@@ -40,7 +40,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_210941) do
     t.datetime "archived_at"
     t.integer "company_id"
     t.datetime "created_at", null: false
-    t.string "email", null: false
+    t.string "email"
     t.string "first_name", null: false
     t.string "last_name", null: false
     t.text "notes"
@@ -49,7 +49,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_210941) do
     t.datetime "updated_at", null: false
     t.index ["archived_at"], name: "index_contacts_on_archived_at"
     t.index ["company_id"], name: "index_contacts_on_company_id"
-    t.index ["email"], name: "index_contacts_on_email", unique: true
     t.index ["starred"], name: "index_contacts_on_starred"
   end
 

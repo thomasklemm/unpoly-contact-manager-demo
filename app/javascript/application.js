@@ -98,3 +98,28 @@ up.compiler('#contact-detail', function() {
     if (row) row.classList.add('selected');
   }
 });
+
+// Activity kind segmented control
+up.compiler('#activity-kind-selector', function(selector) {
+  var form = selector.closest('form');
+  var hiddenInput = form ? form.querySelector('input[name="activity[kind]"]') : null;
+  var buttons = selector.querySelectorAll('.kind-btn');
+
+  function selectKind(kind) {
+    if (hiddenInput) hiddenInput.value = kind;
+    buttons.forEach(function(btn) {
+      var active = btn.dataset.kind === kind;
+      btn.classList.toggle('bg-white', active);
+      btn.classList.toggle('shadow-sm', active);
+      btn.classList.toggle('text-accent', active);
+      btn.classList.toggle('text-gray-500', !active);
+      btn.classList.toggle('hover:text-gray-700', !active);
+    });
+  }
+
+  selectKind(hiddenInput ? (hiddenInput.value || 'note') : 'note');
+
+  buttons.forEach(function(btn) {
+    btn.addEventListener('click', function() { selectKind(btn.dataset.kind); });
+  });
+});

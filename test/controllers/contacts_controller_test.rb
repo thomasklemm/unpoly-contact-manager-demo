@@ -99,7 +99,7 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "PATCH /contacts/:id with invalid params re-renders form" do
-    patch contact_path(@contact), params: { contact: { email: "" } }
+    patch contact_path(@contact), params: { contact: { first_name: "" } }
     assert_response :unprocessable_entity
   end
 

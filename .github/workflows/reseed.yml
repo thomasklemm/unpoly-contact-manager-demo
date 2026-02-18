@@ -14,6 +14,15 @@ jobs:
       - name: Set up flyctl
         uses: superfly/flyctl-actions/setup-flyctl@master
 
+      - name: Wake up Fly machine
+        run: |
+          flyctl machine list -a unpoly-contact-manager-demo --json \
+            | jq -r '.[] | select(.state != "started") | .id' \
+            | xargs -r -I{} flyctl machine start {} -a unpoly-contact-manager-demo
+          sleep 20
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
       - name: Reseed database
         run: flyctl ssh console -a unpoly-contact-manager-demo -C "/bin/bash -c 'DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bin/rails db:seed:replant'"
         env:

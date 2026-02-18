@@ -7,15 +7,18 @@
   <%# App branding + search %>
   <div class="p-4 pb-3">
     <div class="flex items-center justify-between mb-4">
-      <h1 class="font-display text-xl text-white tracking-tight">Contacts</h1>
+      <%= link_to contacts_path, class: "font-display text-xl text-white tracking-tight hover:text-accent transition-colors" do %>Contacts<% end %>
       <div class="flex items-center gap-1.5">
         <%# Companies link %>
         <%= link_to companies_path,
               class: "flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-white/8 transition-colors",
               title: "Companies" do %>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-            <polyline points="9 22 9 12 15 12 15 22"/>
+            <rect x="3" y="3" width="13" height="18" rx="1"/>
+            <path d="M16 8h4l2 13H16"/>
+            <line x1="7" y1="8" x2="10" y2="8"/>
+            <line x1="7" y1="12" x2="10" y2="12"/>
+            <line x1="7" y1="16" x2="10" y2="16"/>
           </svg>
         <% end %>
         <%= link_to new_contact_path,

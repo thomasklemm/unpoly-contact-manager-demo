@@ -11,6 +11,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Do not rely on memory for Unpoly API details — always load the skills first.
 
+## Context7 MCP for Unpoly Docs
+
+The Unpoly library is indexed in Context7 with **921 code snippets**. Skip `resolve-library-id` — the ID is always `/unpoly/unpoly`.
+
+Query directly:
+```
+mcp__context7__query-docs(libraryId: "/unpoly/unpoly", query: "<your question>")
+```
+
+Use this to verify exact option names, event names, or argument signatures when the skills don't cover the specific detail.
+
 ## Commands
 
 ```bash

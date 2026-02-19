@@ -3,8 +3,8 @@
 
 // Follow all links and forms by default
 up.link.config.followSelectors.push('a[href]')
-up.link.config.preloadSelectors.push('a[href]')
-up.link.config.instantSelectors.push('a[href]')
+up.link.config.preloadSelectors.unshift('a[href]')
+up.link.config.instantSelectors.unshift('a[href]')
 up.form.config.submitSelectors.push('form')
 
 // Optimistic star toggle preview

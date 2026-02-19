@@ -25,7 +25,6 @@ class CompaniesTest < ApplicationSystemTestCase
     demo_pause
 
     find("[title='Companies']").click
-    wait_for_unpoly_idle
     demo_pause
 
     assert_current_path companies_path
@@ -39,7 +38,6 @@ class CompaniesTest < ApplicationSystemTestCase
     visit root_path
 
     find("[title='Companies']").click
-    wait_for_unpoly_idle
 
     assert_selector "#contacts-sidebar"
     assert_selector "#contacts-list"
@@ -194,7 +192,6 @@ class CompaniesTest < ApplicationSystemTestCase
     within_modal do
       click_link @alice.full_name    # up-layer="root" — renders into root layer
     end
-    wait_for_unpoly_idle
     demo_pause
 
     assert_no_selector "up-modal-box"   # modal dismissed

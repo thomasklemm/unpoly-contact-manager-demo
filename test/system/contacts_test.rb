@@ -145,13 +145,17 @@ class ContactsTest < ApplicationSystemTestCase
   test "search preserves focus in the search box — up-focus='keep'" do
     visit root_path
 
-    fill_in "q", with: "Bob"
+    # Click explicitly so Chrome registers a real user-initiated focus event,
+    # giving Unpoly's up-focus="keep" something to restore after the fragment swap.
+    find_field("q").click
+    find_field("q").send_keys("Bob")
 
     within "#contacts-list" do
       assert_text @bob.full_name
     end
 
-    # The search field should still have focus after the fragment swap
+    # Wait for Unpoly to finish restoring focus via up-focus="keep".
+    wait_for_unpoly_idle
     focused_id = page.evaluate_script("document.activeElement.id")
     assert_equal "q", focused_id
   end
@@ -392,7 +396,6 @@ class ContactsTest < ApplicationSystemTestCase
       find_field("Email").set("x")   # type — marks field as dirty
       find_field("Email").set("")    # clear — value is now blank but changed
       find_field("Phone").click      # blur email → change event → up-validate fires
-      wait_for_unpoly_idle
 
       # Email was blank when it blurred → inline validation error
       assert_text "can't be blank"

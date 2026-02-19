@@ -22,6 +22,20 @@ mcp__context7__query-docs(libraryId: "/unpoly/unpoly", query: "<your question>")
 
 Use this to verify exact option names, event names, or argument signatures when the skills don't cover the specific detail.
 
+## DeepWiki MCP for Unpoly Docs
+
+DeepWiki provides narrative architecture explanations for `unpoly/unpoly`. Use for "how does X work" questions.
+
+```
+mcp__deepwiki__ask_question(repoName: "unpoly/unpoly", question: "<your question>")
+mcp__deepwiki__read_wiki_structure(repoName: "unpoly/unpoly")
+```
+
+**When to use each source:**
+- **Skills** — load first, covers most common patterns
+- **Context7** — exact option names, event names, argument signatures (code snippets)
+- **DeepWiki** — conceptual explanations, internal architecture, "why does X behave this way"
+
 ## Commands
 
 ```bash

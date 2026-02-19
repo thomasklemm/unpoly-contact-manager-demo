@@ -530,7 +530,7 @@ class ContactsTest < ApplicationSystemTestCase
     within "#activities-panel" do
       find("textarea[name='activity[body]']").set("Follow-up scheduled for next week.")
       demo_pause(0.8)
-      click_button "Add"
+      click_button "Log Activity"
     end
 
     demo_pause

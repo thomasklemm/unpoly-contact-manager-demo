@@ -66,7 +66,7 @@
       <%= link_to "+ New company", new_company_path,
             "data-overlay-link" => "",
             "up-on-accepted" => "let opt = new Option(event.value.name, event.value.id, true, true); document.querySelector('#contact_company_id').add(opt); document.querySelector('#contact_company_id').value = event.value.id;",
-            class: "inline-flex items-center gap-1 px-4 py-2 text-sm font-medium text-accent bg-accent/10 rounded-lg hover:bg-accent/20 whitespace-nowrap cursor-pointer transition-colors" %>
+            class: "btn-ghost gap-1 px-4 py-2" %>
     </div>
 
     <%# Reactive dependent company fields — re-rendered on select change %>
@@ -101,10 +101,9 @@
 
   <div class="flex justify-end gap-3 pt-3 border-t border-gray-100">
     <% if up.layer.overlay? %>
-      <button type="button" class="px-4 py-2 text-sm text-gray-500 font-medium rounded-lg hover:bg-gray-50 transition-colors"
-              up-dismiss="">Cancel</button>
+      <button type="button" class="btn-cancel px-4 py-2" up-dismiss="">Cancel</button>
     <% end %>
     <%= f.submit contact.new_record? ? "Create Contact" : "Save Changes",
-          class: "px-4 py-2 text-sm font-medium text-accent bg-accent/10 rounded-lg hover:bg-accent/20 cursor-pointer transition-colors" %>
+          class: "btn-primary px-4 py-2" %>
   </div>
 <% end %>

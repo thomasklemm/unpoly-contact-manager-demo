@@ -2,39 +2,23 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Skills
+## Unpoly Reference (load on demand, not upfront)
 
-**Automatically invoke both skills at the start of any session involving views, controllers, or feature development** — use the Skill tool to load them before reading or writing any code:
+Load skills only when the task involves Unpoly-specific work (views, overlays, forms, compilers, caching). Skip for pure Ruby/Rails tasks.
 
-- **`/unpoly`** — Comprehensive Unpoly 3 reference: fragments, overlays, forms, caching, lazy loading, compilers, animations, error handling, lifecycle events.
-- **`/unpoly-rails`** — Rails-side integration: `up?`, `up.target?`, `up.validate?`, `up.layer.*`, `up.cache.expire`, flash helpers, `form_with` gotchas, CSP setup.
+- **`/unpoly`** — Fragments, overlays, forms, caching, lazy loading, compilers, animations, lifecycle events.
+- **`/unpoly-rails`** — `up?`, `up.target?`, `up.validate?`, `up.layer.*`, `up.cache.expire`, flash helpers, `form_with` gotchas.
 
-Do not rely on memory for Unpoly API details — always load the skills first.
-
-## Context7 MCP for Unpoly Docs
-
-The Unpoly library is indexed in Context7 with **921 code snippets**. Skip `resolve-library-id` — the ID is always `/unpoly/unpoly`.
-
-Query directly:
+**Prefer Context7 for targeted API lookups** (faster, no full skill load):
 ```
 mcp__context7__query-docs(libraryId: "/unpoly/unpoly", query: "<your question>")
 ```
+Context7 has 921 code snippets — use it for exact option names, event names, argument signatures.
 
-Use this to verify exact option names, event names, or argument signatures when the skills don't cover the specific detail.
-
-## DeepWiki MCP for Unpoly Docs
-
-DeepWiki provides narrative architecture explanations for `unpoly/unpoly`. Use for "how does X work" questions.
-
+**DeepWiki** for conceptual/architecture questions:
 ```
 mcp__deepwiki__ask_question(repoName: "unpoly/unpoly", question: "<your question>")
-mcp__deepwiki__read_wiki_structure(repoName: "unpoly/unpoly")
 ```
-
-**When to use each source:**
-- **Skills** — load first, covers most common patterns
-- **Context7** — exact option names, event names, argument signatures (code snippets)
-- **DeepWiki** — conceptual explanations, internal architecture, "why does X behave this way"
 
 ## Commands
 

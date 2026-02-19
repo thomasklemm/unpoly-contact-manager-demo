@@ -1,13 +1,5 @@
 <%= form_with model: company, class: "space-y-4" do |f| %>
-  <% if company.errors.any? %>
-    <div class="p-3 bg-red-50 border border-red-200/60 rounded-xl">
-      <ul class="text-sm text-red-700 space-y-1">
-        <% company.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+  <%= render 'shared/errors', object: company %>
 
   <div>
     <%= f.label :name, class: "block text-xs font-medium text-gray-500 mb-1" %>

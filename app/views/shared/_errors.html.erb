@@ -1,0 +1,21 @@
+<% if object.errors.any? %>
+  <div class="form-errors rounded-xl border border-red-200/80 bg-red-50 overflow-hidden">
+    <%# Header row: icon + count %>
+    <div class="form-errors-header flex items-center gap-2 px-4 py-2.5 border-b border-red-200/60">
+      <svg class="flex-shrink-0 text-red-400" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span class="form-errors-count text-[11px] font-semibold text-red-600 uppercase tracking-widest">
+        <%= pluralize(object.errors.count, 'error') %>
+      </span>
+    </div>
+    <%# Error messages %>
+    <ul class="px-4 py-3 space-y-1.5">
+      <% object.errors.full_messages.each do |msg| %>
+        <li class="text-sm text-red-700 leading-snug"><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

@@ -5,15 +5,7 @@
         "up-disable" => "[type=submit]"
       } do |f| %>
 
-  <% if contact.errors.any? %>
-    <div class="p-3 bg-red-50 border border-red-200/60 rounded-xl">
-      <ul class="text-sm text-red-700 space-y-1">
-        <% contact.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+  <%= render 'shared/errors', object: contact %>
 
   <div class="grid grid-cols-2 gap-3">
     <div class="contact-field-group">

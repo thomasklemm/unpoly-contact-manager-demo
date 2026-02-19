@@ -77,30 +77,6 @@ up.compiler('.flash-toast', function(element) {
   return function() { clearTimeout(timer); };
 });
 
-// Highlight the active contact row in the sidebar list.
-// Runs when #contacts-list is inserted/updated (search, filter, reload).
-up.compiler('#contacts-list', function() {
-  var detail = document.getElementById('contact-detail');
-  var contactId = detail && detail.dataset.contactId;
-  if (contactId) {
-    var row = document.querySelector('.contact-row-' + contactId);
-    if (row) row.classList.add('selected');
-  }
-});
-
-// When the contact detail panel updates, re-sync the selected row highlight.
-// Reads the contact ID from data-contact-id set by the show view.
-up.compiler('#contact-detail', function(element) {
-  document.querySelectorAll('.contact-row').forEach(function(row) {
-    row.classList.remove('selected');
-  });
-  var contactId = element.dataset.contactId;
-  if (contactId) {
-    var row = document.querySelector('.contact-row-' + contactId);
-    if (row) row.classList.add('selected');
-  }
-});
-
 // Activity kind segmented control
 up.compiler('#activity-kind-selector', function(selector) {
   var form = selector.closest('form');

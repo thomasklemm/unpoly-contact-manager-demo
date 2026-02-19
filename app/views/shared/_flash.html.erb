@@ -1,29 +1,19 @@
-<%# For Unpoly fragment requests with no flash, omit #flash entirely.
-  # This prevents up-hungry from overwriting an existing flash toast with empty
-  # content when follow-up requests (e.g. up-defer for activities) arrive after
-  # the flash has already been consumed by the first fragment response.
-  # Full page loads (non-Unpoly) always render the wrapper so up-hungry is wired up. %>
-<% if flash.any? %>
-  <div id="flash" up-hungry>
-    <% flash.each do |type, message| %>
-      <% styles = case type.to_s
-        when "notice" then "bg-emerald-600 text-white"
-        when "alert"  then "bg-red-600 text-white"
-        when "error"  then "bg-red-600 text-white"
-        else               "bg-gray-800 text-white"
-      end %>
-      <% icon = case type.to_s
-        when "notice" then '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
-        when "alert", "error" then '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
-        else '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
-      end %>
-      <div class="flash-toast fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-2.5 rounded-xl shadow-lg text-sm font-medium <%= styles %>">
-        <%= icon.html_safe %>
-        <span><%= message %></span>
-      </div>
-    <% end %>
-  </div>
-<% elsif !up? %>
-  <%# Full page load with no flash — render the empty wrapper so up-hungry is in the DOM %>
-  <div id="flash" up-hungry></div>
-<% end %>
+<div id="flash" up-flashes>
+  <% flash.each do |type, message| %>
+    <% styles = case type.to_s
+      when "notice" then "bg-emerald-600 text-white"
+      when "alert"  then "bg-red-600 text-white"
+      when "error"  then "bg-red-600 text-white"
+      else               "bg-gray-800 text-white"
+    end %>
+    <% icon = case type.to_s
+      when "notice" then '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+      when "alert", "error" then '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+      else '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+    end %>
+    <div class="flash-toast fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-2.5 rounded-xl shadow-lg text-sm font-medium <%= styles %>">
+      <%= icon.html_safe %>
+      <span><%= message %></span>
+    </div>
+  <% end %>
+</div>

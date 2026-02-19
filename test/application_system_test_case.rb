@@ -34,14 +34,16 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   #
   # The pattern:
   #   1. Click the target field  → blurs the previous field → up-validate fires
-  #   2. Wait for validate round-trip + re-render to finish
+  #   2. settle_form (blur active + wait for idle) → drains any in-flight validates,
+  #      including one the newly focused field itself may trigger on blur
   #   3. Re-find the field in the refreshed DOM and set the value
   #
-  # This avoids the race where typing into a field and an up-validate
-  # re-render happen simultaneously (which could wipe out what you typed).
+  # Using settle_form (not just wait_for_unpoly_idle) ensures the newly focused
+  # field's own up-validate is also drained before we type, not just the previous
+  # field's validation.
   def fill_form_field(label, value)
     find_field(label).click   # focus + trigger blur-validate on previous field
-    wait_for_unpoly_idle      # wait for the validate re-render
+    settle_form               # blur active element + wait for all validates to drain
     find_field(label).set(value) # fill the now-stable field
   end
 

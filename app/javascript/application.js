@@ -46,20 +46,17 @@ window.toggleOverlayStyle = function() {
   const current = getOverlayStyle()
   const next = current === 'modal' ? 'drawer' : 'modal'
   localStorage.setItem('overlayStyle', next)
-  // Re-compile all overlay links to pick up the new style
   document.querySelectorAll('[data-overlay-link]').forEach(function(el) {
     el.setAttribute('up-layer', 'new ' + next)
-  })
-  // Update toggle button appearance
-  document.querySelectorAll('[data-overlay-toggle]').forEach(function(el) {
-    el.setAttribute('data-current', next)
+    if (next === 'drawer') {
+      el.setAttribute('up-size', 'grow')
+      el.setAttribute('up-position', 'right')
+    } else {
+      el.removeAttribute('up-size')
+      el.removeAttribute('up-position')
+    }
   })
 }
-
-// Initialize toggle button to match stored preference on compile
-up.compiler('[data-overlay-toggle]', function(element) {
-  element.setAttribute('data-current', getOverlayStyle())
-})
 
 // Helper: reload contacts list while preserving its scroll position
 window.reloadContactsListPreservingScroll = function() {

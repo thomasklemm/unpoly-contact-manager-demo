@@ -22,7 +22,6 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     demo_pause
 
     find("[title='Activity Log']").click
-    wait_for_unpoly_idle
     demo_pause
 
     assert_current_path activities_path
@@ -75,7 +74,6 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     demo_pause
 
     find("#activities-filter-form input[name='q']").set("pricing")
-    wait_for_unpoly_idle
     demo_pause
 
     within "#activities-list" do
@@ -84,7 +82,6 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     end
 
     find("#activities-filter-form input[name='q']").set("")
-    wait_for_unpoly_idle
 
     within "#activities-list" do
       assert_text @alice_note.body
@@ -101,7 +98,6 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     within "#activities-kind-tabs" do
       find("[data-kind-tab='call']").click
     end
-    wait_for_unpoly_idle
     demo_pause
 
     within "#activities-list" do
@@ -121,7 +117,6 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     within "#activities-kind-tabs" do
       find("[data-kind-tab='']").click
     end
-    wait_for_unpoly_idle
 
     within "#activities-list" do
       assert_text @alice_note.body
@@ -136,7 +131,6 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     demo_pause
 
     first(".activity-item").click
-    wait_for_unpoly_idle
     demo_pause
 
     assert_selector "up-modal-box"
@@ -164,7 +158,6 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     demo_pause(0.5)
 
     row.find("a[title='Edit']").click
-    wait_for_unpoly_idle
     demo_pause
 
     assert_selector "up-modal-box"
@@ -179,14 +172,12 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     visit activities_path
 
     first(".activity-item").click
-    wait_for_unpoly_idle
     assert_selector "up-modal-box"
     demo_pause
 
     within_modal do
       click_link "Edit"
     end
-    wait_for_unpoly_idle
     demo_pause
 
     assert_selector "up-modal-box"   # still the same overlay — no extra layer
@@ -200,12 +191,10 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     visit activities_path
 
     first(".activity-item").click
-    wait_for_unpoly_idle
 
     within_modal do
       click_link "Edit"
     end
-    wait_for_unpoly_idle
 
     within_modal do
       fill_in "Notes", with: "Updated body from system test."
@@ -213,7 +202,6 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
       click_button "Save Changes"
     end
 
-    wait_for_unpoly_idle
     demo_pause
 
     assert_no_selector "up-modal-box"
@@ -227,12 +215,10 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     visit activities_path
 
     first(".activity-item").click
-    wait_for_unpoly_idle
 
     within_modal do
       click_link "Edit"
     end
-    wait_for_unpoly_idle
 
     within_modal do
       click_button "Cancel"
@@ -249,14 +235,12 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     demo_pause
 
     first(".activity-item").click
-    wait_for_unpoly_idle
     demo_pause
 
     page.accept_confirm do
       within_modal { find("button[title='Delete']").click }
     end
 
-    wait_for_unpoly_idle
     demo_pause
 
     assert_no_selector "up-modal-box"
@@ -272,13 +256,11 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     demo_pause
 
     first(".activity-item").click
-    wait_for_unpoly_idle
     demo_pause
 
     within_modal do
       click_link @alice.full_name
     end
-    wait_for_unpoly_idle
     demo_pause
 
     assert_text @alice.full_name

@@ -265,6 +265,7 @@ class ContactsTest < ApplicationSystemTestCase
     within "#contacts-list" do
       click_link "Company"
     end
+    wait_for_unpoly_idle
 
     # Alice and Carol (Acme Corp) should appear before Bob (Globex Industries)
     names_in_order = page.all("#contacts-list .contact-name").map(&:text)
@@ -280,6 +281,7 @@ class ContactsTest < ApplicationSystemTestCase
     within "#contacts-list" do
       click_link "Name"
     end
+    wait_for_unpoly_idle
 
     # Davis < Johnson < Williams alphabetically
     names_in_order = page.all("#contacts-list .contact-name").map(&:text)

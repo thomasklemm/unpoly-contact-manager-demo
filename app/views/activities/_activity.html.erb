@@ -1,4 +1,8 @@
-<div class="activity-item">
+<%# up-expand delegates row clicks to the sr-only .activity-view-link,
+    skipping the delete button (it's a <form> / interactive element). %>
+<div class="activity-item group cursor-pointer -mx-2 py-0.5 rounded-lg hover:bg-black/[0.03] transition-colors"
+     up-expand=".activity-view-link">
+
   <div class="activity-dot flex items-center justify-center">
     <% case activity.kind %>
     <% when "call" %>
@@ -9,11 +13,37 @@
       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
     <% end %>
   </div>
-  <div class="pb-1">
-    <div class="flex items-baseline gap-2 mb-0.5">
-      <span class="text-xs font-semibold text-gray-600 capitalize"><%= activity.kind %></span>
-      <span class="text-[11px] text-gray-400"><%= time_ago_in_words(activity.created_at) %> ago</span>
+
+  <div class="pb-1 flex items-start gap-2">
+    <div class="flex-1 min-w-0">
+      <div class="flex items-baseline gap-2 mb-0.5">
+        <span class="text-xs font-semibold text-gray-600 capitalize"><%= activity.kind %></span>
+        <span class="text-[11px] text-gray-400"><%= time_ago_in_words(activity.created_at) %> ago</span>
+      </div>
+      <p class="text-sm text-gray-600 leading-relaxed line-clamp-3"><%= activity.body %></p>
+
+      <%# Primary link for up-expand — hidden but keyboard accessible.
+          up-on-accepted reloads #activities-panel after overlay closes. %>
+      <%= link_to "View details",
+            activity_path(activity),
+            "data-overlay-link" => "",
+            "up-history"        => "false",
+            "up-on-accepted"    => "up.reload('#activities-panel')",
+            "up-on-dismissed"   => "up.reload('#activities-panel')",
+            class: "activity-view-link sr-only" %>
     </div>
-    <p class="text-sm text-gray-600 leading-relaxed"><%= activity.body %></p>
+
+    <%# Edit icon — shown on row hover only; interactive so up-expand skips it %>
+    <%= link_to edit_activity_path(activity),
+          "data-overlay-link" => "",
+          "up-history"        => "false",
+          "up-on-accepted"    => "up.reload('#activities-panel')",
+          "up-on-dismissed"   => "up.reload('#activities-panel')",
+          class: "flex-shrink-0 self-start mt-0.5 w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-accent opacity-0 group-hover:opacity-100 transition-opacity",
+          title: "Edit" do %>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    <% end %>
+
   </div>
+
 </div>

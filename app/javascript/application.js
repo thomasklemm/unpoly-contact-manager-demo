@@ -1,6 +1,9 @@
 // Unpoly is loaded as a global script (IIFE) before this module runs.
 // Configure Unpoly global behavior:
 
+// Never cache new/edit form pages — always fetch fresh so forms open in clean state
+up.network.config.autoCache = (request) => !request.url.match(/\/(new|edit)(\?|$)/)
+
 // Follow all links and forms by default
 up.link.config.followSelectors.push('a[href]')
 up.link.config.preloadSelectors.unshift('a[href]')
@@ -76,6 +79,37 @@ up.compiler('.flash-toast', function(element) {
   }, 4000);
   return function() { clearTimeout(timer); };
 });
+
+// Optimistic delete preview: fade out the activity row immediately
+up.preview('delete-activity', function(preview) {
+  var row = preview.origin.closest('.activity-item')
+  if (row) preview.setStyle(row, { opacity: '0.3', pointerEvents: 'none' })
+})
+
+// Activities filter — kind tabs (outside #activities-list, wired to the search form)
+// Clicking a tab updates the hidden :kind field in #activities-filter-form and submits.
+up.compiler('#activities-kind-tabs', function(element) {
+  var tabs = element.querySelectorAll('[data-kind-tab]')
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var kind = tab.dataset.kindTab
+      var hiddenField = document.getElementById('activities-kind-hidden')
+      var form = document.getElementById('activities-filter-form')
+      if (hiddenField) hiddenField.value = kind
+      // Update active styling immediately (optimistic)
+      tabs.forEach(function(t) {
+        var active = t === tab
+        t.classList.toggle('bg-white', active)
+        t.classList.toggle('shadow-sm', active)
+        t.classList.toggle('text-accent', active)
+        t.classList.toggle('text-gray-500', !active)
+        t.classList.toggle('hover:text-gray-700', !active)
+      })
+      if (form) up.submit(form)
+    })
+  })
+})
 
 // Activity kind segmented control
 up.compiler('#activity-kind-selector', function(selector) {

@@ -197,6 +197,13 @@
       up-drawer-box {
         max-width: 560px;
         box-shadow: -10px 0 40px rgba(0,0,0,0.2);
+        background: #f5f0e8;
+      }
+      /* Push the X dismiss button away from the box edge */
+      up-modal-box [up-dismiss],
+      up-drawer-box [up-dismiss] {
+        top: 0.875rem !important;
+        right: 0.875rem !important;
       }
 
       /* ---- Flash toast animation ---- */

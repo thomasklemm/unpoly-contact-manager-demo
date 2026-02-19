@@ -4,54 +4,112 @@
   <div id="global-activities" class="max-w-2xl mx-auto px-8 py-8">
 
     <%# Header %>
-    <div class="flex items-center justify-between mb-8">
+    <div class="flex items-center justify-between mb-6">
       <div>
         <h2 class="font-display text-2xl text-gray-900">Activity Log</h2>
         <p class="text-xs text-gray-400 mt-0.5">All activities across contacts</p>
       </div>
       <%= link_to new_activity_path,
             "data-overlay-link" => "",
-            "up-on-accepted" => "up.reload('#global-activities')",
+            "up-on-accepted" => "up.reload('#activities-list')",
             class: "btn-primary gap-1.5 px-3 py-1.5" do %>
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
         Log Activity
       <% end %>
     </div>
 
-    <% if @activities_by_day.empty? %>
-      <div class="text-center py-16">
-        <p class="font-display text-xl text-gray-400 italic">No activities yet</p>
-        <p class="text-xs text-gray-400 mt-1.5">Start logging calls, emails, and notes</p>
-      </div>
-    <% else %>
-      <div class="space-y-8">
-        <% @activities_by_day.each do |date, activities| %>
-          <div>
-            <%# Day header %>
-            <div class="flex items-center gap-3 mb-4">
-              <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest whitespace-nowrap">
-                <% if date == Date.today %>
-                  Today
-                <% elsif date == Date.yesterday %>
-                  Yesterday
-                <% else %>
-                  <%= date.strftime("%A, %B %-d") %><%= date.year != Date.today.year ? date.strftime(", %Y") : "" %>
-                <% end %>
-              </span>
-              <div class="flex-1 h-px bg-gray-200/80"></div>
-              <span class="text-[11px] text-gray-400 tabular-nums"><%= pluralize(activities.size, 'activity') %></span>
-            </div>
+    <%# ── Filter bar ──────────────────────────────────────────────────────────────
+        Search form + kind tabs live OUTSIDE #activities-list so they survive
+        fragment swaps. The compiler in application.js wires the kind tabs to
+        update the hidden :kind field and submit the form.
+    %>
+    <div class="flex items-center gap-3 mb-5">
 
-            <%# Timeline for this day %>
-            <div class="space-y-4">
-              <% activities.each do |activity| %>
-                <%= render 'activities/activity_with_contact', activity: activity %>
-              <% end %>
-            </div>
-          </div>
+      <%# Live search: up-autosubmit fires on each keystroke (300 ms debounce) %>
+      <%= form_with url: activities_path, method: :get,
+            id: "activities-filter-form",
+            html: { "up-target" => "#activities-list", "up-history" => "true" },
+            class: "flex-1" do |f| %>
+        <div class="relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+               width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <%= f.search_field :q,
+                value: @q,
+                placeholder: "Search activities…",
+                "up-autosubmit" => "",
+                "up-delay" => "300",
+                autocomplete: "off",
+                class: "sidebar-search w-full pl-8 pr-3 py-2 text-sm rounded-lg" %>
+        </div>
+        <%# Hidden kind field — updated by the kind-tabs compiler when a tab is clicked %>
+        <%= f.hidden_field :kind, value: @kind, id: "activities-kind-hidden" %>
+      <% end %>
+
+      <%# Kind filter tabs — clicking updates the hidden field and submits the form %>
+      <div class="flex gap-1 p-1 bg-surface-muted rounded-lg flex-shrink-0"
+           id="activities-kind-tabs"
+           data-current-kind="<%= @kind %>">
+        <% [["", "All"], ["note", "📝 Notes"], ["call", "📞 Calls"], ["email", "✉️ Emails"]].each do |k, label| %>
+          <button type="button"
+                  data-kind-tab="<%= k %>"
+                  class="kind-tab px-2.5 py-1 text-xs font-medium rounded-md transition-all whitespace-nowrap
+                         <%= @kind == k ? 'bg-white shadow-sm text-accent' : 'text-gray-500 hover:text-gray-700' %>">
+            <%= label %>
+          </button>
         <% end %>
       </div>
-    <% end %>
+
+    </div>
+
+    <%# ── Activity list ──────────────────────────────────────────────────────────
+        Replaced by fragment swaps on search/filter.
+        up-poll auto-reloads every 30 s from whatever source URL was last used
+        (preserving the active search + kind filter automatically).
+    %>
+    <div id="activities-list" up-poll="30000">
+
+      <% if @activities_by_day.empty? %>
+        <div class="text-center py-16">
+          <% if @q.present? || @kind.present? %>
+            <p class="font-display text-xl text-gray-400 italic">No matching activities</p>
+            <p class="text-xs text-gray-400 mt-1.5">Try a different search or filter</p>
+          <% else %>
+            <p class="font-display text-xl text-gray-400 italic">No activities yet</p>
+            <p class="text-xs text-gray-400 mt-1.5">Start logging calls, emails, and notes</p>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="space-y-8">
+          <% @activities_by_day.each do |date, activities| %>
+            <div>
+              <%# Day header %>
+              <div class="flex items-center gap-3 mb-4">
+                <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest whitespace-nowrap">
+                  <% if date == Date.today %>
+                    Today
+                  <% elsif date == Date.yesterday %>
+                    Yesterday
+                  <% else %>
+                    <%= date.strftime("%A, %B %-d") %><%= date.year != Date.today.year ? date.strftime(", %Y") : "" %>
+                  <% end %>
+                </span>
+                <div class="flex-1 h-px bg-gray-200/80"></div>
+                <span class="text-[11px] text-gray-400 tabular-nums"><%= pluralize(activities.size, 'activity') %></span>
+              </div>
+
+              <div class="space-y-4">
+                <% activities.each do |activity| %>
+                  <%= render 'activities/activity_with_contact', activity: activity, q: @q, kind: @kind %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+    </div><%# /activities-list %>
 
   </div>
 </div>

@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   root "contacts#index"
 
-  resources :activities, only: [ :index, :new, :create ]
+  resources :activities, only: [ :index, :new, :create, :show, :edit, :update, :destroy ]
 
   resources :contacts do
     member do

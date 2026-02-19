@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   root "contacts#index"
 
+  resources :activities, only: [ :index, :new, :create ]
+
   resources :contacts do
     member do
       patch :star

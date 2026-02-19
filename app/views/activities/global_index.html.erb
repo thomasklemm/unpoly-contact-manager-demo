@@ -1,0 +1,57 @@
+<%= render 'contacts/sidebar' %>
+
+<div id="contact-detail" up-main>
+  <div id="global-activities" class="max-w-2xl mx-auto px-8 py-8">
+
+    <%# Header %>
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h2 class="font-display text-2xl text-gray-900">Activity Log</h2>
+        <p class="text-xs text-gray-400 mt-0.5">All activities across contacts</p>
+      </div>
+      <%= link_to new_activity_path,
+            "data-overlay-link" => "",
+            "up-on-accepted" => "up.reload('#global-activities')",
+            class: "flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent/10 text-accent hover:bg-accent/20 transition-colors text-sm font-medium" do %>
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
+        Log Activity
+      <% end %>
+    </div>
+
+    <% if @activities_by_day.empty? %>
+      <div class="text-center py-16">
+        <p class="font-display text-xl text-gray-400 italic">No activities yet</p>
+        <p class="text-xs text-gray-400 mt-1.5">Start logging calls, emails, and notes</p>
+      </div>
+    <% else %>
+      <div class="space-y-8">
+        <% @activities_by_day.each do |date, activities| %>
+          <div>
+            <%# Day header %>
+            <div class="flex items-center gap-3 mb-4">
+              <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest whitespace-nowrap">
+                <% if date == Date.today %>
+                  Today
+                <% elsif date == Date.yesterday %>
+                  Yesterday
+                <% else %>
+                  <%= date.strftime("%A, %B %-d") %><%= date.year != Date.today.year ? date.strftime(", %Y") : "" %>
+                <% end %>
+              </span>
+              <div class="flex-1 h-px bg-gray-200/80"></div>
+              <span class="text-[11px] text-gray-400 tabular-nums"><%= pluralize(activities.size, 'activity') %></span>
+            </div>
+
+            <%# Timeline for this day %>
+            <div class="space-y-4">
+              <% activities.each do |activity| %>
+                <%= render 'activities/activity_with_contact', activity: activity %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+  </div>
+</div>

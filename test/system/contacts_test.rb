@@ -94,6 +94,16 @@ class ContactsTest < ApplicationSystemTestCase
     end
   end
 
+  test "clicking a contact marks its sidebar row as active — up-nav" do
+    visit root_path
+
+    within "#contacts-sidebar" do
+      click_link @alice.full_name
+    end
+
+    assert_selector "#contact-row-#{@alice.id}.up-current"
+  end
+
   # ── 3. Live search (Feature 5) ──────────────────────────────────────────────
   # up-autosubmit + up-watch-delay="300" on the search input.
   # Only #contacts-list updates; search box keeps focus (up-focus="keep").
@@ -209,6 +219,16 @@ class ContactsTest < ApplicationSystemTestCase
     end
   end
 
+  test "search with no results shows the empty state" do
+    visit root_path
+
+    fill_in "q", with: "zzznomatch"
+
+    within "#contacts-list" do
+      assert_text "No contacts found"
+    end
+  end
+
   test "search and filter tabs compose — search within Starred" do
     visit root_path
 
@@ -237,6 +257,36 @@ class ContactsTest < ApplicationSystemTestCase
       assert_text @alice.full_name
       assert_text @bob.full_name
     end
+  end
+
+  test "sort by Company orders contacts by company name" do
+    visit root_path
+
+    within "#contacts-list" do
+      click_link "Company"
+    end
+
+    # Alice and Carol (Acme Corp) should appear before Bob (Globex Industries)
+    names_in_order = page.all("#contacts-list .contact-name").map(&:text)
+    alice_pos = names_in_order.index(@alice.full_name)
+    bob_pos   = names_in_order.index(@bob.full_name)
+    assert alice_pos < bob_pos,
+      "Expected Alice (Acme) to appear before Bob (Globex) when sorted by company"
+  end
+
+  test "sort by Name orders contacts alphabetically by last name" do
+    visit root_path
+
+    within "#contacts-list" do
+      click_link "Name"
+    end
+
+    # Davis < Johnson < Williams alphabetically
+    names_in_order = page.all("#contacts-list .contact-name").map(&:text)
+    carol_pos = names_in_order.index(@carol.full_name)
+    alice_pos = names_in_order.index(@alice.full_name)
+    assert carol_pos < alice_pos,
+      "Expected Carol Davis to appear before Alice Johnson when sorted by last name"
   end
 
   # ── 6. New contact modal (Feature 6) ────────────────────────────────────────
@@ -420,6 +470,51 @@ class ContactsTest < ApplicationSystemTestCase
     end
 
     assert_selector "#flash", text: "Bobby Williams was updated"
+  end
+
+  test "submitting the edit form with a blank first name shows a validation error" do
+    visit root_path
+
+    within "#contacts-sidebar" do
+      click_link @bob.full_name
+    end
+
+    within "#contact-detail" do
+      click_link "Edit"
+    end
+
+    assert_selector "up-modal-box"
+
+    within_modal do
+      find_field("First name").set("")
+      settle_form     # blank blur → up-validate → server re-renders with error
+      click_button "Save Changes"
+
+      assert_text "can't be blank"
+    end
+
+    assert_selector "up-modal-box"         # overlay stays open for correction
+    assert_equal "Bob", @bob.reload.first_name  # unchanged in DB
+  end
+
+  test "Cancel in the edit modal keeps the original contact data" do
+    visit root_path
+
+    within "#contacts-sidebar" do
+      click_link @bob.full_name
+    end
+
+    within "#contact-detail" do
+      click_link "Edit"
+    end
+
+    within_modal do
+      fill_form_field "First name", "Changed"
+      click_button "Cancel"
+    end
+
+    assert_no_selector "up-modal-box"
+    assert_equal "Bob", @bob.reload.first_name  # unchanged in DB
   end
 
   # ── 9. Reactive company select (Feature 9) ───────────────────────────────────
@@ -807,7 +902,43 @@ class ContactsTest < ApplicationSystemTestCase
     end
   end
 
-  # ── 17. Drawer overlay mode ──────────────────────────────────────────────────
+  # ── 17. Contact detail content ──────────────────────────────────────────────
+  # Tags, notes, and the archived badge are rendered from the model.
+
+  test "tags are displayed in the contact detail panel" do
+    visit root_path
+
+    within "#contacts-sidebar" do
+      click_link @alice.full_name   # Alice has Customer + VIP tags
+    end
+
+    within "#contact-detail" do
+      assert_text "Customer"
+      assert_text "VIP"
+    end
+  end
+
+  test "notes are displayed in the contact detail panel" do
+    visit root_path
+
+    within "#contacts-sidebar" do
+      click_link @alice.full_name   # Alice has notes fixture text
+    end
+
+    within "#contact-detail" do
+      assert_text "Met at the 2024 SaaS Summit."
+    end
+  end
+
+  test "archived badge is shown for archived contacts" do
+    visit contact_path(@archived)
+
+    within "#contact-detail" do
+      assert_text "Archived"
+    end
+  end
+
+  # ── 18. Drawer overlay mode ──────────────────────────────────────────────────
   # The Settings toggle switches the data-overlay-link macro between
   # up-layer="new modal" and up-layer="new drawer".
 

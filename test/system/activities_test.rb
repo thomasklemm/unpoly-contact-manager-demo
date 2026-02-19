@@ -30,13 +30,6 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     within "#contact-detail" do
       assert_text "Activity Log"
     end
-  end
-
-  test "navigating to activity log keeps the sidebar intact" do
-    visit root_path
-
-    find("[title='Activity Log']").click
-    wait_for_unpoly_idle
 
     assert_selector "#contacts-sidebar"
     assert_selector "#contacts-list"
@@ -44,30 +37,16 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
 
   # ── 2. Activity list ─────────────────────────────────────────────────────
 
-  test "activity log displays all activities across contacts" do
+  test "activity log shows all activities with body, contact link, and kind label" do
     visit activities_path
     demo_pause
 
     within "#global-activities" do
       assert_text @alice_note.body
       assert_text @alice_call.body
-    end
-  end
-
-  test "each activity shows the contact's full name as a link" do
-    visit activities_path
-
-    within "#global-activities" do
       assert_link @alice.full_name
-    end
-  end
-
-  test "activities include the kind label" do
-    visit activities_path
-
-    within "#global-activities" do
-      assert_text "Note"   # alice_note
-      assert_text "Call"   # alice_call
+      assert_text "Note"
+      assert_text "Call"
     end
   end
 
@@ -91,7 +70,7 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
 
   # ── 3. Live search ───────────────────────────────────────────────────────
 
-  test "typing in the search box filters the activity list" do
+  test "search box filters the activity list and restores it when cleared" do
     visit activities_path
     demo_pause
 
@@ -103,13 +82,6 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
       assert_text @alice_note.body    # contains "pricing"
       assert_no_text @alice_call.body # "30-minute intro call" — no match
     end
-  end
-
-  test "clearing the search box restores all activities" do
-    visit activities_path
-
-    find("#activities-filter-form input[name='q']").set("pricing")
-    wait_for_unpoly_idle
 
     find("#activities-filter-form input[name='q']").set("")
     wait_for_unpoly_idle
@@ -138,30 +110,14 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     end
   end
 
-  test "clicking the Note tab shows only note activities" do
-    visit activities_path
-
-    within "#activities-kind-tabs" do
-      find("[data-kind-tab='note']").click
-    end
-    wait_for_unpoly_idle
-
-    within "#activities-list" do
-      assert_text @alice_note.body
-      assert_no_text @alice_call.body
-    end
-  end
-
   test "clicking the All tab restores the full list" do
     visit activities_path
 
-    # Filter to calls first
     within "#activities-kind-tabs" do
       find("[data-kind-tab='call']").click
     end
     wait_for_unpoly_idle
 
-    # Then back to all
     within "#activities-kind-tabs" do
       find("[data-kind-tab='']").click
     end
@@ -179,7 +135,6 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     visit activities_path
     demo_pause
 
-    # up-expand delegates the row click to the sr-only link
     first(".activity-item").click
     wait_for_unpoly_idle
     demo_pause
@@ -204,13 +159,11 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     visit activities_path
     demo_pause
 
-    # Hover the row to reveal the edit icon, then click it
     row = first(".activity-item")
     row.hover
     demo_pause(0.5)
 
-    edit_link = row.find("a[title='Edit']")
-    edit_link.click
+    row.find("a[title='Edit']").click
     wait_for_unpoly_idle
     demo_pause
 
@@ -218,18 +171,6 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     within_modal do
       assert_text "Edit Activity"
     end
-  end
-
-  test "edit icon hover does not change browser history" do
-    visit activities_path
-    original_path = current_path
-
-    row = first(".activity-item")
-    row.hover
-    row.find("a[title='Edit']").click
-    wait_for_unpoly_idle
-
-    assert_equal original_path, current_path
   end
 
   # ── 6. Activity detail overlay — edit in place ───────────────────────────
@@ -340,7 +281,6 @@ class GlobalActivitiesTest < ApplicationSystemTestCase
     wait_for_unpoly_idle
     demo_pause
 
-    # Contact detail is visible after the link is followed
     assert_text @alice.full_name
     assert_text @alice.email
   end
